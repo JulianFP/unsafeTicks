@@ -1,0 +1,40 @@
+# This section describes the requirements of the build/installation
+# process itself. Being able to do this was the original reason to
+# introduce pyproject.toml
+[build-system]
+requires = [
+    "setuptools >=61",
+]
+
+# This section provides general project metadata that is used across
+# a variety of build tools. Notably, the version specified here is the
+# single source of truth for project_W's version
+[project]
+name = "ticketmaster-but-worse"
+description = "A project for the binary hacking practical"
+readme = "README.md"
+maintainers = [
+    { name = "Julian Partanen", email = "your@email.com" },
+    { name = "Alexander Mattingley-Scott", email = "your@email.com" },
+]
+dynamic = ["version"]
+requires-python = ">=3.9"
+license = { text = "GPLv3" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: GNU Affero General Public License v3",
+]
+dependencies = [
+    "flask",
+    # JWT Flask plugin for session tokens
+    "flask-jwt-extended",
+]
+
+# The following section contains setuptools-specific configuration
+# options. For a full reference of available options, check the overview
+# at https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
+[tool.setuptools]
+packages = [
+    "ticketmaster-but-worse",
+]
