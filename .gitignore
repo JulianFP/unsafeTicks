@@ -31,9 +31,6 @@
 *.out
 *.app
 
-#git stuff
-*submodules
-
 #Python stuff
 *.venv
 *venv
