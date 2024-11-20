@@ -1,0 +1,6 @@
+[submodule "client/submodules/json"]
+	path = client/submodules/json
+	url = https://github.com/nlohmann/json
+[submodule "client/submodules/cpp-httplib"]
+	path = client/submodules/cpp-httplib
+	url = https://github.com/yhirose/cpp-httplib
