@@ -1,7 +1,7 @@
 import secrets, base64, hashlib
 import pyotp
 from flask import Flask, json, jsonify, request
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required
+from flask_jwt_extended import JWTManager, create_access_token, current_user, jwt_required
 
 app = Flask(__name__)
 
@@ -16,42 +16,67 @@ def ticket_token_hash(token: str) -> str:
     )
 
 
-
+#these dicts simulate the servers database
 tickets = {}
+users = {
+    "defaultUser": {
+        "username": "defaultUser",
+        "password": "password1234",
+        "hasPayedForTickets": 1,
+    }
+}
 
-@app.get("/hello_world")
-def hello_world():
-    name = request.args["name"]
-    return jsonify(msg=f"hello {name}!")
-
-@app.post("/test")
-def test():
-    parameter = request.form["test"]
-    return jsonify(msg=f"Your parameter was {parameter}")
+@jwt.user_lookup_loader
+def user_lookup_loader(_jwt_header, jwt_data):
+    username = jwt_data["sub"]
+    return users[username]
 
 @app.post("/login")
 def login():
     username = request.form["username"]
     password = request.form["password"]
-    if username == "defaultUser" and password == "password1234":
-        access_token = create_access_token(identity="defaultUser")
+    user = users.get(username)
+    if user and password == user["password"]:
+        access_token = create_access_token(identity=username)
         return jsonify(client_token=access_token)
-    return jsonify(msg="Login invalid")
+    return jsonify(msg="Login invalid"), 403
 
 
-
-@app.post("/generate_token")
+@app.post("/generate_ticket")
 @jwt_required()
-def generate_token():
-    token = secrets.token_urlsafe()
-    token_hash = ticket_token_hash(token)
-    totp_secret = pyotp.random_base32()
-    tickets[token_hash] = totp_secret
-    return jsonify(ticket_token = token, totp_secret = totp_secret)
+def generate_ticket():
+    user = current_user
 
-@app.get("/validate_ticket")
+    #check if this user has payed for this ticket
+    if user["hasPayedForTickets"] > 0:
+        token = secrets.token_urlsafe()
+        token_hash = ticket_token_hash(token)
+        totp_secret = pyotp.random_base32()
+
+        #save only the hash of the token server-side
+        tickets[token_hash] = totp_secret 
+
+        #decrease ticket allowance of user
+        users[user["username"]]["hasPayedForTickets"] -= 1
+
+        return jsonify(ticket_token = token, totp_secret = totp_secret)
+    else:
+        return jsonify(msg="This user hasn't bought a ticket yet!"), 403
+
+@app.get("/check_ticket_validity")
 def validate_ticket():
-    base64Object = request.args["ticket"]
-    jsonObjectAsString = base64.b64decode(base64Object).decode('utf-8')
+    base32Object = request.args["ticket"]
+    jsonObjectAsString = base64.b32decode(base32Object).decode('ascii')
     jsonObject = json.loads(jsonObjectAsString)
-    return jsonify(msg=f"object is {jsonObject['token']}")
+
+    #lookup ticket using the hash of its token
+    token_hash = ticket_token_hash(jsonObject['token'])
+    ticket_secret = tickets.get(token_hash)
+    if not ticket_secret:
+        return jsonify(msg=f"No such ticket exists"), 404
+
+    totp = pyotp.TOTP(ticket_secret, digits=10, interval=15)
+    if totp.verify(jsonObject['one_time_password']):
+        return jsonify(msg=f"Success, this ticket is still valid")
+    else:
+        return jsonify(msg=f"This ticket is invalid!"), 403

@@ -4,6 +4,9 @@ cmake_minimum_required(VERSION 3.11)
 # Start project and set its name
 project(ticketmaster-but-worse LANGUAGES CXX)
 
+#set default build type to Debug for development and debugging purposes
+set(default_build_type "Debug")
+
 # The following is required for language servers (like clangd)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -17,3 +20,8 @@ target_link_libraries(ticketmaster-but-worse PRIVATE nlohmann_json::nlohmann_jso
 #add httplib library
 add_subdirectory(submodules/cpp-httplib)
 target_link_libraries(ticketmaster-but-worse PRIVATE httplib)
+
+#add libcotp library
+set(DHMAC_WRAPPER "openssl")
+add_subdirectory(submodules/libcotp)
+target_link_libraries(ticketmaster-but-worse PRIVATE cotp)
