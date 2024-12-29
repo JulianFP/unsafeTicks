@@ -34,6 +34,7 @@ int main (int argc, char *argv[]) {
     }
     catch (const CommunicationError &e) {
         std::cout << "Error while communicating with server: " << e.get_error_msg() << std::endl;
+        return 1;
     }
     
     return 0;
