@@ -7,11 +7,21 @@ int main (int argc, char *argv[]) {
     ServerConnection conn = ServerConnection("http://127.0.0.1:5000");
     try {
         conn.login();
-        Ticket ticket = conn.generate_ticket();
+        std::vector<Ticket> tickets;
+        conn.get_tickets(tickets);
 
-        std::cout << "The ticket barcode string is " << ticket.get_ticket_string() << std::endl;
+        if(tickets.size() == 0) {
+            std::cout << "This user doesn't own any tickets" << std::endl;
+            return 1;
+        }
+        else if (tickets.size() > 1) {
+            std::cout << "This user owns multiple tickets. Displaying first one only" << std::endl;
+        }
+
+        Ticket ticket = *tickets.begin();
 
         while(true) {
+            std::cout << "The current ticket barcode string is " << tickets.begin()->get_ticket_string() << std::endl;
             if (conn.check_ticket_validity(ticket)) {
                 std::cout << "The ticket is still valid" << std::endl;
             }
@@ -19,7 +29,7 @@ int main (int argc, char *argv[]) {
                 std::cout << "The ticket is invalid!" << std::endl;
                 return 1;
             }
-            std::this_thread::sleep_for(std::chrono::seconds(5));
+            std::this_thread::sleep_for(std::chrono::seconds(15));
         }
     }
     catch (const CommunicationError &e) {

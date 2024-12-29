@@ -1,4 +1,5 @@
 #include "server-connection.hpp"
+#include "ticket.hpp"
 
 bool ServerConnection::is_new_error(std::string &old_error_msg, const std::string &error_msg) const {
     if (old_error_msg == error_msg) {
@@ -86,6 +87,18 @@ json ServerConnection::post_logged_in(const std::string &route, const httplib::P
     }
 }
 
+json ServerConnection::get_logged_in(const std::string &route, const httplib::Params &query_params) {
+    if (access_token.length() == 0) {
+        throw CommunicationError("Please login first before calling post_logged_in!");
+    }
+    else {
+        httplib::Headers headers = {
+            { "Authorization", "Bearer " + access_token }
+        };
+        return get(route, query_params, headers);
+    }
+}
+
 ServerConnection::ServerConnection(std::string server_url)
     : cli(httplib::Client(server_url))
     , access_token("")
@@ -101,9 +114,12 @@ void ServerConnection::login() {
     access_token = response["client_token"];
 }
 
-Ticket ServerConnection::generate_ticket() {
-    json response = post_logged_in("/generate_ticket");
-    return Ticket(response["ticket_token"], response["totp_secret"]);
+void ServerConnection::get_tickets(std::vector<Ticket> &tickets) {
+    json response = get_logged_in("/get_tickets");
+
+    for (json ticket_obj : response["tickets"]) {
+        tickets.push_back(Ticket(ticket_obj["token"], ticket_obj["totp_secret"]));
+    }
 }
 
 bool ServerConnection::check_ticket_validity(const Ticket &ticket) {

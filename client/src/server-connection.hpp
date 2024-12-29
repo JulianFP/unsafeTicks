@@ -27,12 +27,14 @@ private:
 
     json post_logged_in(const std::string &route, const httplib::Params &form_params = {});
 
+    json get_logged_in(const std::string &route, const httplib::Params &query_params = {});
+
 public:
     ServerConnection(std::string server_url);
 
     void login();
 
-    Ticket generate_ticket();
+    void get_tickets(std::vector<Ticket> &tickets);
 
     bool check_ticket_validity(const Ticket &ticket);
 };

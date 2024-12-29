@@ -1,4 +1,4 @@
-import secrets, base64, hashlib
+import secrets, base64
 import pyotp
 from flask import Flask, json, jsonify, request
 from flask_jwt_extended import JWTManager, create_access_token, current_user, jwt_required
@@ -8,23 +8,30 @@ app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = secrets.token_urlsafe(64)
 jwt = JWTManager(app)
 
-def ticket_token_hash(token: str) -> str:
-    return (
-        base64.urlsafe_b64encode(hashlib.sha256(token.encode("ascii")).digest())
-        .rstrip(b"=")
-        .decode("ascii")
-    )
-
-
 #these dicts simulate the servers database
-tickets = {}
+tickets = {} #key: ticket token, value: base32 encoded totp_secret
 users = {
     "defaultUser": {
         "username": "defaultUser",
         "password": "password1234",
-        "hasPayedForTickets": 1,
+        "tickets": [], #stores ticket tokens which then can be used to lookup the totp_secret in the tickets dict above
     }
 }
+
+def generate_ticket(username):
+    """
+    This function creates a new ticket for the specified user.
+    In reality this would be executed every time a user buys a new ticket, 
+    for the sake of this demo we just run it ones for 'defaultUser' at startup
+    """
+    token = secrets.token_urlsafe()
+    totp_secret = pyotp.random_base32()
+
+    tickets[token] = totp_secret 
+    users[username]["tickets"].append(token)
+
+#our default user gets one ticket
+generate_ticket("defaultUser")
 
 @jwt.user_lookup_loader
 def user_lookup_loader(_jwt_header, jwt_data):
@@ -41,37 +48,32 @@ def login():
         return jsonify(client_token=access_token)
     return jsonify(msg="Login invalid"), 403
 
-
-@app.post("/generate_ticket")
+@app.get("/get_tickets")
 @jwt_required()
-def generate_ticket():
+def get_tickets():
     user = current_user
-
-    #check if this user has payed for this ticket
-    if user["hasPayedForTickets"] > 0:
-        token = secrets.token_urlsafe()
-        token_hash = ticket_token_hash(token)
-        totp_secret = pyotp.random_base32()
-
-        #save only the hash of the token server-side
-        tickets[token_hash] = totp_secret 
-
-        #decrease ticket allowance of user
-        users[user["username"]]["hasPayedForTickets"] -= 1
-
-        return jsonify(ticket_token = token, totp_secret = totp_secret)
-    else:
-        return jsonify(msg="This user hasn't bought a ticket yet!"), 403
+    returnVal = []
+    for token in users[user["username"]]["tickets"]:
+        returnVal.append({
+            "token": token,
+            "totp_secret": tickets[token]
+        })
+    return jsonify(tickets=returnVal)
 
 @app.get("/check_ticket_validity")
 def validate_ticket():
+    """
+    In reality this API endpoint would only be available to the devices used by the staff at events that scan and validate the tickets.
+    We use it in the client application to make sure that everything works and to point people to it so that they can easily make sure that they solved the challenge (without requiring them to generate barcodes as well)
+    Note that jwt_required is missing here, no authentication by a user account is needed.
+    This is the first major flaw in this code: This function doesn't check which account owns the ticket, it just checks if the ticket exists and is valid at all. This would also be quite difficult to do with just a barcode.
+    """
     base32Object = request.args["ticket"]
     jsonObjectAsString = base64.b32decode(base32Object).decode('ascii')
     jsonObject = json.loads(jsonObjectAsString)
 
     #lookup ticket using the hash of its token
-    token_hash = ticket_token_hash(jsonObject['token'])
-    ticket_secret = tickets.get(token_hash)
+    ticket_secret = tickets.get(jsonObject['token'])
     if not ticket_secret:
         return jsonify(msg=f"No such ticket exists"), 404
 
