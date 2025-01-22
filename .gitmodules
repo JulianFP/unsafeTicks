@@ -4,3 +4,6 @@
 [submodule "client/submodules/cpp-httplib"]
 	path = client/submodules/cpp-httplib
 	url = https://github.com/yhirose/cpp-httplib
+[submodule "client/submodules/qrencode"]
+	path = client/submodules/qrencode
+	url = https://github.com/fukuchi/libqrencode.git
