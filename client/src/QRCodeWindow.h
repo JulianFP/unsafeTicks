@@ -4,31 +4,28 @@
 #include <QWidget>
 #include <QLabel>
 #include <QPushButton>
-#include <QVBoxLayout>
-#include <QImage>
-#include <QPixmap>
-#include <QPainter>
 #include <QString>
-#include <qrencode.h>  // QR code generation library
+#include "server-connection.hpp" 
 
 class QRCodeWindow : public QWidget {
-    Q_OBJECT  // Required for Qt signals and slots
+    Q_OBJECT
 
 public:
-    explicit QRCodeWindow(const QString &data, QWidget *parent = nullptr);
-    
-    ~QRCodeWindow();
-
+    explicit QRCodeWindow(const QString &text, ServerConnection *conn, QWidget *parent = nullptr);
 
 private:
-    QString qrData;
-    QLabel *qrLabel;
+    QLabel *qrCodeLabel;
+    QLabel *statusLabel;
+    QPushButton *checkButton;
+    ServerConnection *conn;  // Verbindung zum Server
+    Ticket ticket;  // Ticket für die Validitätsprüfung
 
-    // Function to generate and display a QR code
-    void generateQRCode();
+    void generateQRCode(const QString &text);
 
-    // Function to create a QR code image from text data
-    QImage createQRCodeImage(const QString &data);
+private slots:
+    void onCheckButtonClicked();  // Slot für den Button
+    void checkTicketValidity();  // Funktion zur Validitätsprüfung des Tickets
+    void updateStatus(const QString &status);  // Status-Update anzeigen
 };
 
 #endif // QRCODEWINDOW_H

@@ -1,80 +1,70 @@
 #include "QRCodeWindow.h"
-#include <QPushButton>
-#include <QLabel>
 #include <QVBoxLayout>
 #include <QImage>
 #include <QPixmap>
 #include <QPainter>
 #include <QFont>
-#include <qrencode.h>  // QR code generation library
+#include <qrencode.h>
 #include <iostream>
 
-QRCodeWindow::QRCodeWindow(const QString &data, QWidget *parent)
-    : QWidget(parent), qrData(data) {
-    setWindowTitle("QR Code Generator");
-    setFixedSize(400, 300);
+QRCodeWindow::QRCodeWindow(const QString &text, ServerConnection *conn, QWidget *parent)
+    : QWidget(parent), qrCodeLabel(new QLabel(this)), statusLabel(new QLabel(this)),
+      checkButton(new QPushButton("Check Ticket Validity", this)), conn(conn) {
 
-    // Create layout
     QVBoxLayout *layout = new QVBoxLayout(this);
+    layout->addWidget(qrCodeLabel);
+    layout->addWidget(statusLabel);  // Label für Ticket-Status
+    layout->addWidget(checkButton);  // Button zum Überprüfen der Gültigkeit
 
-    // Create the button
-    QPushButton *scanButton = new QPushButton("Generate QR Code", this);
-    layout->addWidget(scanButton);
+    generateQRCode(text);
 
-    // Create the label to display the QR code
-    qrLabel = new QLabel(this);
-    qrLabel->setAlignment(Qt::AlignCenter);
-    layout->addWidget(qrLabel);
-
-    // Connect the button to the QR code generation
-    connect(scanButton, &QPushButton::clicked, this, [this]() {
-        generateQRCode();
-    });
+    connect(checkButton, &QPushButton::clicked, this, &QRCodeWindow::onCheckButtonClicked);
 
     setLayout(layout);
+    setWindowTitle("QR Code Viewer");
+
+    resize(400, 400);
 }
 
-QRCodeWindow::~QRCodeWindow() {
-    // Clean up resources if necessary
-}
+void QRCodeWindow::generateQRCode(const QString &text) {
+    QRcode *qr = QRcode_encodeString(text.toUtf8().constData(), 0, QR_ECLEVEL_Q, QR_MODE_8, 1);
 
-// Function to generate and display a QR code
-void QRCodeWindow::generateQRCode() {
-    QImage qrImage = createQRCodeImage(qrData);
-    if (!qrImage.isNull()) {
-        qrLabel->setPixmap(QPixmap::fromImage(qrImage));
-    } else {
-        qrLabel->setText("Failed to generate QR code");
-    }
-}
+    if (qr) {
+        int size = qr->width > 0 ? qr->width : 1;
+        QImage image(size, size, QImage::Format_RGB32);
+        image.fill(Qt::white);
 
-// Function to create a QR code image from text data
-QImage QRCodeWindow::createQRCodeImage(const QString &data) {
-    const int MAX_QR_LENGTH = 100;
-    QString qrDataLimited = data.left(MAX_QR_LENGTH);
-    QRcode *qr = QRcode_encodeString(data.toUtf8().constData(), 0, QR_ECLEVEL_L, QR_MODE_8, 1);
-    if (!qr) {
-        std::cerr << "Failed to generate QR code" << std::endl;
-        return QImage();
-    }
+        QPainter painter(&image);
+        painter.setBrush(Qt::black);
 
-    int qrSize = qr->width;
-    int scaleFactor = 10;  // Scale each QR pixel by 10x10 for better visibility
-    int imageSize = qrSize * scaleFactor;
-    QImage image(imageSize, imageSize, QImage::Format_RGB32);
-    image.fill(Qt::white);
-
-    QPainter painter(&image);
-    painter.setBrush(Qt::black);
-
-    for (int y = 0; y < qrSize; ++y) {
-        for (int x = 0; x < qrSize; ++x) {
-            if (qr->data[y * qrSize + x] & 0x01) {
-                painter.drawRect(x * scaleFactor, y * scaleFactor, scaleFactor, scaleFactor);
+        for (int y = 0; y < size; ++y) {
+            for (int x = 0; x < size; ++x) {
+                if (qr->data[y * size + x] & 0x01) {
+                    painter.drawRect(x, y, 1, 1);
+                }
             }
         }
-    }
 
-    QRcode_free(qr);
-    return image;
+        qrCodeLabel->setPixmap(QPixmap::fromImage(image).scaled(350, 350, Qt::KeepAspectRatio));
+        QRcode_free(qr);
+    } else {
+        qrCodeLabel->setText("Failed to generate QR code");
+    }
+}
+
+void QRCodeWindow::onCheckButtonClicked() {
+    checkTicketValidity();  // Direkt im Fenster die Ticketprüfung durchführen
+}
+
+void QRCodeWindow::checkTicketValidity() {
+    bool isValid = conn->check_ticket_validity(ticket);
+    if (isValid) {
+        updateStatus("Ticket is valid");
+    } else {
+        updateStatus("Ticket is not valid");
+    }
+}
+
+void QRCodeWindow::updateStatus(const QString &status) {
+    statusLabel->setText(status);  // Zeigt den Status im Fenster an
 }
