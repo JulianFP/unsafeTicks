@@ -5,13 +5,17 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QString>
+#include <QTimer>
 #include "server-connection.hpp" 
+#include "ticket.hpp"
 
 class QRCodeWindow : public QWidget {
     Q_OBJECT
 
 public:
-    explicit QRCodeWindow(const QString &text, ServerConnection *conn, QWidget *parent = nullptr);
+    explicit QRCodeWindow(const QString &text, const std::string &ticketToken, const std::string &totpSecret, ServerConnection *conn, QWidget *parent = nullptr);
+
+    void updateQRCode(const QString &text);
 
 private:
     QLabel *qrCodeLabel;

@@ -37,3 +37,11 @@ std::string Ticket::get_ticket_string() const {
 
     return returnVal;
 }
+
+std::string Ticket::get_ticket_token() const {
+    return ticket_token;
+}
+
+std::string Ticket::get_totp_secret() const {
+    return totp_secret;
+}

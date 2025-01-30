@@ -20,22 +20,14 @@ int main(int argc, char *argv[]) {
 
         Ticket ticket = *tickets.begin();
 
-        // Überprüfe die Ticketgültigkeit
-        /* Wird jetzt in der QRCodeWindow.cpp gemacht, in der Header datei ist die Verbindung zum server-connection.hpp
-        if (conn.check_ticket_validity(ticket)) {
-            std::cout << "The ticket is valid" << std::endl;
-        } else {
-            std::cout << "The ticket is invalid!" << std::endl;
-            return 1;
-        }
-        */
-       
         QApplication app(argc, argv);
 
         // Initialisiere das Fenster mit dem QR-Code des aktuellen Tickets
-        QRCodeWindow window(QString::fromStdString(ticket.get_ticket_string()), &conn);
-        window.show();
+        std::string ticketToken = ticket.get_ticket_token();  
+        std::string totpSecret = ticket.get_totp_secret();
 
+        QRCodeWindow window(QString::fromStdString(ticket.get_ticket_string()), ticketToken, totpSecret, &conn);
+        window.show();
         // Timer, um alle 15 Sekunden das Ticket zu aktualisieren
         QTimer timer;
         QObject::connect(&timer, &QTimer::timeout, [&]() {
@@ -51,6 +43,4 @@ int main(int argc, char *argv[]) {
         std::cout << "Error while communicating with server: " << e.get_error_msg() << std::endl;
         return 1;
     }
-
-    return 0;
 }

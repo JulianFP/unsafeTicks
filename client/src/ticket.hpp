@@ -15,4 +15,6 @@ public:
     Ticket(const std::string &ticket_token, const std::string &totp_secret);
 
     std::string get_ticket_string() const;
+    std::string get_ticket_token() const;  // Getter for ticket_token
+    std::string get_totp_secret() const;  // Getter for totp_secret
 };
