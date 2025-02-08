@@ -32,7 +32,7 @@ QRCodeWindow::QRCodeWindow(const QString &text, const std::string &ticketToken, 
 }
 
 void QRCodeWindow::generateQRCode(const QString &text) {
-    QRcode *qr = QRcode_encodeString(text.toUtf8().constData(), 0, QR_ECLEVEL_Q, QR_MODE_8, 1);
+    QRcode *qr = QRcode_encodeString(text.toUtf8().constData(), 10, QR_ECLEVEL_Q, QR_MODE_8, 1);
 
     if (qr) {
         // Berechne die Größe des QR-Codes und passe sie an
