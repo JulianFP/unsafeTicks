@@ -8,14 +8,15 @@ let
 in 
 pkgs.mkShell {
   buildInputs = with pkgs; [
-    #dependencies for server
+    #dependencies for running the server
     (python3.withPackages myPythonPackages)
 
-    #dependencies for client
+    #dependencies for building and running the client
+    cmake
     openssl
-  ];
+    qt5.full
 
-  nativeBuildInputs = with pkgs; [
-    pkg-config 
+    #tools for solving the hacking challenge
+    radare2
   ];
 }

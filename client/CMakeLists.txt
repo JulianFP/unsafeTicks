@@ -12,28 +12,34 @@ set(CMAKE_BUILD_DIR "build")
 # The following is required for language servers (like clangd)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Add executable
-add_executable(ticketmaster-but-worse src/main.cpp)
+set(CMAKE_AUTOMOC ON)
 
-#add local hpp libs
-add_library(server-connection src/server-connection.cpp)
-target_link_libraries(ticketmaster-but-worse server-connection)
-add_library(ticket src/ticket.cpp)
-target_link_libraries(ticketmaster-but-worse ticket)
-add_library(exceptions-base src/exceptions-base.cpp)
-target_link_libraries(ticketmaster-but-worse exceptions-base)
+# Set the Qt version and required components
+find_package(Qt5 REQUIRED COMPONENTS Widgets)
 
-#add json library
+# Add executables
+add_executable(ticketmaster-but-worse 
+    src/main.cpp 
+    src/server-connection.cpp
+    src/ticket.cpp
+    src/exceptions-base.cpp
+    src/QRCodeWindow.cpp
+)
+
+#add all external libraries
 add_subdirectory(submodules/json)
-target_link_libraries(ticket nlohmann_json::nlohmann_json)
-target_link_libraries(server-connection nlohmann_json::nlohmann_json)
-
-#add httplib library
 add_subdirectory(submodules/cpp-httplib)
-target_link_libraries(server-connection httplib)
-
-#add libcotp library
 set(HMAC_WRAPPER "openssl" CACHE STRING "tell libcotp to use openssl")
 add_subdirectory(submodules/libcotp)
-target_link_libraries(ticket cotp)
+set(WITHOUT_PNG "ON" CACHE STRING "tell qrencode to disable png support")
+add_subdirectory(submodules/qrencode)
 
+#link libraries
+target_link_libraries(ticketmaster-but-worse
+    nlohmann_json::nlohmann_json
+    httplib
+    cotp
+    qrencode
+    Qt5::Widgets
+)
+target_include_directories(ticketmaster-but-worse PUBLIC submodules/qrencode) #for some reason needed for qrencode.h file
