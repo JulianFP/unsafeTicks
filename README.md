@@ -23,7 +23,6 @@ A project for the binary hacking practical
 
 **Qt5 development tools**:
     install qtbase5-dev qt5-qmake qtbase5-dev-tools
-    install libpng-dev
 
 **CMake and build-essential**:
     install cmake build-essential
