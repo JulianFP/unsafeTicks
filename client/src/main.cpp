@@ -28,11 +28,13 @@ int main(int argc, char *argv[]) {
 
         QRCodeWindow window(QString::fromStdString(ticket.get_ticket_string()), ticketToken, totpSecret, &conn);
         window.show();
+        std::cout << "Ticket QR-Code string: " << ticket.get_ticket_string() << std::endl;
+
         // Timer, um alle 15 Sekunden das Ticket zu aktualisieren
         QTimer timer;
         QObject::connect(&timer, &QTimer::timeout, [&]() {
             std::string new_ticket_string = ticket.get_ticket_string();
-            std::cout << "Updated ticket barcode string: " << new_ticket_string << std::endl;
+            std::cout << "Updated ticket QR-Code string: " << new_ticket_string << std::endl;
             window.updateQRCode(QString::fromStdString(new_ticket_string));
         });
         timer.start(15000);  // Alle 15 Sekunden
