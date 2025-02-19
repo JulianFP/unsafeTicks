@@ -5,7 +5,6 @@
 #include <QPainter>
 #include <QFont>
 #include <qrencode.h>
-#include <iostream>
 
 QRCodeWindow::QRCodeWindow(const QString &text, const std::string &ticketToken, const std::string &totpSecret, ServerConnection *conn, QWidget *parent)
     : QWidget(parent), 
@@ -40,7 +39,8 @@ void QRCodeWindow::generateQRCode(const QString &text) {
         
         // Erhöhe die Auflösung des QR-Codes, um mehr Details zu erfassen
         int scaleFactor = 8;  // Skalierungsfaktor, je größer, desto detaillierter das Bild
-        QImage image(size * scaleFactor, size * scaleFactor, QImage::Format_RGB888);
+        int borderSize = 1;
+        QImage image((size + 2*borderSize) * scaleFactor, (size + 2*borderSize) * scaleFactor, QImage::Format_RGB888);
         image.fill(Qt::white);  // Hintergrund auf Weiß setzen
 
         QPainter painter(&image);
@@ -52,7 +52,7 @@ void QRCodeWindow::generateQRCode(const QString &text) {
             for (int x = 0; x < size; ++x) {
                 if (qr->data[y * size + x] & 0x01) {
                     // Zeichne die Zellen des QR-Codes in der neuen Auflösung
-                    painter.drawRect(x * scaleFactor, y * scaleFactor, scaleFactor, scaleFactor);
+                    painter.drawRect((x + borderSize) * scaleFactor, (y + borderSize) * scaleFactor, scaleFactor, scaleFactor);
                 }
             }
         }
