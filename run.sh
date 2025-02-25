@@ -11,7 +11,7 @@ box_out() {
   echo " -${b//?/-}-
 | ${b//?/ } |"
   for l in "${s[@]}"; do
-    printf '| %s%*s%s |\n' "$(tput setaf 4)" "-$w" "$l" "$(tput setaf 3)"
+    printf '| %s%*s%s |\n' "$(tput setaf 6)" "-$w" "$l" "$(tput setaf 3)"
   done
   echo "| ${b//?/ } |
  -${b//?/-}-"
@@ -47,7 +47,7 @@ elif command -v apt-get > /dev/null 2>&1; then
     }
     startServer() {
         echo "Installing packages required for the server now. Please confirm the installation."
-        sudo apt-get install python3 python3-pip python3-venv
+        sudo apt-get install python3 python3-pip python3-venv curl
         python3 -m venv .venv
         source .venv/bin/activate
         pip3 install ./server
@@ -75,17 +75,21 @@ else
     rm -f ./server/rootCA.*
     generateCerts
 fi
-if [ "$(curl -s https://localhost:8000/ping --cacert server/rootCA.crt)" = "pong" ]; then
+if command -v curl > /dev/null 2>&1 && [ "$(curl -s https://localhost:8000/ping --cacert server/rootCA.crt)" = "pong" ]; then
     echo "Server component is already running. Not starting again"
 else
     echo "Starting server as background daemon"
     startServer
-    sleep 3 #wait 3 seconds for server to boot up
-    if [ "$(curl -s https://localhost:8000/ping --cacert server/rootCA.crt)" = "pong" ]; then
-        echo "Server is running under address https://localhost:8000"
-    else
-        echo "Starting the server component seemingly failed. Aborting...."
-        exit 1
-    fi
+    sleep 5 #wait 3 seconds for server to boot up
+    counter=0
+    while ! [ "$(curl -s https://localhost:8000/ping --cacert server/rootCA.crt)" = "pong" ]; do
+        if [ $counter = 10 ]; then
+            echo "The server didn't come online after 10 seconds. Starting it has seemingly failed. Aborting...."
+            exit 1
+        fi
+        ((counter++))
+        sleep 1
+    done
+    echo "Server is running under address https://localhost:8000"
 fi
 box_out "The clients binary file is now available in this directory" "Execute it with the following command:" "./ticketmaster-but-worse-client localhost 8000 ./server/rootCA.crt" "For the sake of the challenge please only use those CLI arguments" "All rules for the hacking challenge are in the README.md file"
