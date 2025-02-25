@@ -34,7 +34,7 @@ def generate_ticket(username):
 generate_ticket("defaultUser")
 
 @jwt.user_lookup_loader
-def user_lookup_loader(jwt_data):
+def user_lookup_loader(_, jwt_data):
     username = jwt_data["sub"]
     return users[username]
 
