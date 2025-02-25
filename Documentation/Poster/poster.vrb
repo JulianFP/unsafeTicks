@@ -1,0 +1,80 @@
+\begin{columns}[t]
+\separatorcolumn
+
+\begin{column}{\colwidth}
+
+	\begin{block}{Motivation and Challenges}
+
+		\begin{itemize}
+			\item Explain your problem here.
+			\item Also motivate why you looked into the specific problem.
+		\end{itemize}
+
+	\end{block}
+
+
+\end{column}
+
+\separatorcolumn
+
+\begin{column}{\colwidth}
+
+	\begin{alertblock}{Methodology and Concept}
+
+		How did you solve the problem.
+
+		\begin{enumerate}
+				\item First do this.
+				\item Then this.
+				\item Then that.
+		\end{enumerate}
+
+		This solves the problem nicely! Citation\cite{goli_resprop_2020}
+
+	\end{alertblock}
+
+	\begin{block}{Details about X}
+
+		Give some details about a specific part of your project you think is
+		important or interesting.
+
+	\end{block}
+
+	\begin{block}{Details about Y}
+
+		Same for another part.
+
+	\end{block}
+
+\end{column}
+
+\separatorcolumn
+
+\begin{column}{\colwidth}
+
+	\begin{block}{Results}
+
+		Show some of your results. For reversing tasks: show what you found about
+		the target. For exploitation tasks: show to what results your topic can be
+		used.
+
+	\end{block}
+
+	\begin{exampleblock}{Future Work}
+		How would you improve on your work in the future?
+		\begin{itemize}
+			\item Make everything cleaner.
+			\item Make everything faster.
+			\item Make everything cheaper.
+		\end{itemize}
+	\end{exampleblock}
+
+	\begin{block}{References}
+		%\nocite{*}
+		\footnotesize{\bibliographystyle{ieeetr}\bibliography{poster.bib}}
+	\end{block}
+
+\end{column}
+
+\separatorcolumn
+\end{columns}
