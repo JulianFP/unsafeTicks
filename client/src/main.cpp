@@ -3,7 +3,7 @@
 #include "server-connection.hpp"
 #include "QRCodeWindow.h"
 
-const std::string argument_error_message = ": Please provide the backends address, the backends port and optionally the backends CA-bundle (if it uses a self-signed certificate)\n\n./ticketmaster-but-worse <backend address> <backend port> [<path to backends CA-bundle file>]\nFor example: ./ticketmaster-but-worse localhost 8000 ./rootCA.crt";
+const std::string argument_error_message = ": Please provide the backends address, the backends port and optionally the backends CA-bundle (if it uses a self-signed certificate)\n\n./unsafeTicksClient <backend address> <backend port> [<path to backends CA-bundle file>]\nFor example: ./unsafeTicksClient localhost 8000 ./rootCA.crt";
 
 int main(int argc, char *argv[]) {
     if (argc < 3 || argc > 4) {

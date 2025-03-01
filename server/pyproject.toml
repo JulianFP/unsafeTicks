@@ -10,8 +10,8 @@ requires = [
 # a variety of build tools. Notably, the version specified here is the
 # single source of truth for project_W's version
 [project]
-name = "ticketmaster-but-worse"
-description = "A project for the binary hacking practical"
+name = "unsafeTicks"
+description = "A hacking challenge written as part of the binary hacking practical at Heidelberg university"
 readme = "README.md"
 maintainers = [
     { name = "Julian Partanen", email = "your@email.com" },
@@ -38,5 +38,5 @@ dependencies = [
 # at https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
 [tool.setuptools]
 packages = [
-    "ticketmaster-but-worse",
+    "unsafeTicks",
 ]

@@ -30,7 +30,7 @@ if command -v nix-shell > /dev/null 2>&1; then
         nix-shell shell.nix --run "openssl x509 -req -CA ./server/rootCA.crt -CAkey ./server/rootCA.key -in ./server/domain.csr -out ./server/domain.crt -days 365 -CAcreateserial"
     }
     startServer() {
-        nix-shell shell.nix --run "gunicorn -D -b 'localhost:8000' --certfile=./server/domain.crt --keyfile=./server/domain.key server.ticketmaster-but-worse.app:app"
+        nix-shell shell.nix --run "gunicorn -D -b 'localhost:8000' --certfile=./server/domain.crt --keyfile=./server/domain.key server.unsafeTicks.app:app"
     }
 elif command -v apt-get > /dev/null 2>&1; then
     echo "Couldn't find nix-shell command, falling back to apt-get..."
@@ -51,7 +51,7 @@ elif command -v apt-get > /dev/null 2>&1; then
         python3 -m venv .venv
         source .venv/bin/activate
         pip3 install ./server
-        gunicorn -D -b 'localhost:8000' --certfile=./server/domain.crt --keyfile=./server/domain.key server.ticketmaster-but-worse.app:app
+        gunicorn -D -b 'localhost:8000' --certfile=./server/domain.crt --keyfile=./server/domain.key server.unsafeTicks.app:app
     }
 else
     echo "Neither nix-shell nor apt-get is installed on this system. Either run this script again on a system that has at least one of these package managers available (nix can be installed on any Linux distro) or do what the script would otherwise do for you manually."
@@ -60,12 +60,12 @@ fi
 
 echo "Ensuring that all git submodules are pulled..."
 git submodule update --init --recursive
-if [ -f ./ticketmaster-but-worse-client ]; then
+if [ -f ./unsafeTicksClient ]; then
     echo "Client binary already present. No need to recompile"
 else
     echo "Compiling client..."
     compileClient
-    cp client/build/ticketmaster-but-worse ticketmaster-but-worse-client
+    cp client/build/unsafeTicks unsafeTicksClient
 fi
 if [ -f ./server/rootCA.crt ] && [ -f ./server/domain.crt ] && [ -f ./server/domain.key ]; then
     echo "Found existing ssl certs for server. Reusing them..."
@@ -92,4 +92,4 @@ else
     done
     echo "Server is running under address https://localhost:8000"
 fi
-box_out "The clients binary file is now available in this directory" "Execute it with the following command:" "./ticketmaster-but-worse-client localhost 8000 ./server/rootCA.crt" "For the sake of the challenge please only use those CLI arguments" "All rules for the hacking challenge are in the README.md file"
+box_out "The clients binary file is now available in this directory" "Execute it with the following command:" "./unsafeTicksClient localhost 8000 ./server/rootCA.crt" "For the sake of the challenge please only use those CLI arguments" "All rules for the hacking challenge are in the README.md file"
