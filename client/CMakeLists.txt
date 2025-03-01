@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.11)
 
 # Start project and set its name
-project(ticketmaster-but-worse LANGUAGES CXX)
+project(unsafeTicks LANGUAGES CXX)
 
 #set default build type to Debug for development and debugging purposes
 set(default_build_type "Debug")
@@ -18,7 +18,7 @@ set(CMAKE_AUTOMOC ON)
 find_package(Qt5 REQUIRED COMPONENTS Widgets)
 
 # Add executables
-add_executable(ticketmaster-but-worse 
+add_executable(unsafeTicks 
     src/main.cpp 
     src/server-connection.cpp
     src/ticket.cpp
@@ -35,11 +35,11 @@ set(WITHOUT_PNG "ON" CACHE STRING "tell qrencode to disable png support")
 add_subdirectory(submodules/qrencode)
 
 #link libraries
-target_link_libraries(ticketmaster-but-worse
+target_link_libraries(unsafeTicks
     nlohmann_json::nlohmann_json
     httplib
     cotp
     qrencode
     Qt5::Widgets
 )
-target_include_directories(ticketmaster-but-worse PUBLIC submodules/qrencode) #for some reason needed for qrencode.h file
+target_include_directories(unsafeTicks PUBLIC submodules/qrencode) #for some reason needed for qrencode.h file
