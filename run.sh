@@ -84,12 +84,14 @@ else
     counter=0
     while ! [ "$(curl -s https://localhost:8000/ping --cacert server/rootCA.crt)" = "pong" ]; do
         if [ $counter = 10 ]; then
-            echo "The server didn't come online after 10 seconds. Starting it has seemingly failed. Aborting...."
+            echo "The server didn't come online after 10 seconds. Starting it has seemingly failed."
+            echo "Maybe TCP port 8000 was already in use, possibly by an already running (but broken) instance of this server? Search for a python process that runs gunicorn and terminate it. If no such process exists then use netstat to find whichever process is using port 8000 and stop that one."
+            echo "Aborting...."
             exit 1
         fi
         ((counter++))
         sleep 1
     done
-    echo "Server is running under address https://localhost:8000"
+    echo "Server is now running under address https://localhost:8000"
 fi
 box_out "The clients binary file is now available in this directory" "Execute it with the following command:" "./unsafeTicksClient localhost 8000 ./server/rootCA.crt" "For the sake of the challenge please only use those CLI arguments" "All rules for the hacking challenge are in the README.md file"
