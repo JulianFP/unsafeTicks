@@ -90,7 +90,12 @@
 			In fact, TicketMaster logs the token directly to the browser console, making it trivial for attackers to capture and reuse it.
 			This flaw enables unauthorized duplication, resale, or offline storage of tickets—effectively bypassing TicketMaster’s restrictions. 
 			Additionally, there is uncertainty about the lifetime of raw tokens, raising concerns about the extent to which SafeTix can prevent ticket fraud.
-			
+			\begin{figure}[h] % "h" means place here
+				\centering
+				\includegraphics[width=0.9\textwidth]{Image_1.png} % Adjust width as needed
+				\caption{The Program for dummies I guess ?.}
+				\label{fig:sample}
+			\end{figure}
 			By recreating SafeTix, we aimed to make it a notch safer (not logging the ticket to the console) but keep a vulnerability that can be reverse engineered. 
 			\item 
 		\end{itemize}
@@ -113,13 +118,6 @@
 				\item Then this.
 				\item Then that.
 		\end{enumerate}
-
-		\begin{figure}[h] % "h" means place here
-			\centering
-			\includegraphics[width=0.9\textwidth]{Image_1.png} % Adjust width as needed
-			\caption{The Program for dummies I guess ?.}
-			\label{fig:sample}
-		\end{figure}
 
 		This solves the problem nicely! Citation\cite{goli_resprop_2020}
 
