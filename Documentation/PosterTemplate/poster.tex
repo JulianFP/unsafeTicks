@@ -10,6 +10,7 @@
 \usetheme{gemini}
 \usecolortheme{mit}
 \usepackage{graphicx}
+\usepackage{subcaption}
 \usepackage{booktabs}
 \usepackage{tikz}
 \usetikzlibrary{trees, matrix, positioning, patterns, shapes, shadows, shapes.arrows, arrows.meta, shapes.multipart, decorations.pathreplacing, calc, tikzmark, shapes.geometric}
@@ -43,9 +44,9 @@
 % Title
 % ====================
 
-\title{\sout{Safe}Tix, The Best-Worst QR-Code Scanner}
+\title{\sout{Safe}Tix, The Best-Worst QR-Code Ticketing system}
 
-\author{ \inst{1} \and Alexander Mattingley-Scott \inst{1}}
+\author{ Julian Partanen \inst{1} \and Alexander Mattingley-Scott \inst{1}}
 
 \institute[shortinst]{\inst{1} Heidelberg University}
 
@@ -54,8 +55,8 @@
 % ====================
 
 \footercontent{
-	Binary Hacking 2024/25 \hfill
-	\href{mailto:your.email@stud.uni-heidelberg.de}{tt249@stud.uni-heidelberg.de}}
+	Beginners practical Binary Hacking 2024/25 \hfill
+	\href{mailto:me272@uni-heidelberg.de}{tt249@uni-heidelberg.de}}
 % (can be left out to remove footer)
 
 % ====================
@@ -78,7 +79,64 @@
 
 \begin{column}{\colwidth}
 
-	\begin{block}{Motivation and Challenges}
+    \begin{block}{About the original SafeTix}
+        \begin{itemize}
+            \item Ticketmaster is an American ticket sales and distribution company \cite{ticketmaster_wikipedia}
+            \item For all kinds of events like concerts, sport events, theater and more \cite{ticketmaster_wikipedia}
+            \item Some partners: Taylor Swift, NFL, NHL, NBA, WWE, AEW, theater productions like Harry Potter and the Cursed Child and many more \cite{ticketmaster_wikipedia}
+            \item SafeTix: Rotating ticketing system by ticketmaster, initially introduced in 2019 \cite{introducing_safetix} \cite{ticketmaster_safetix_faq} \cite{nba_safetix_faq}
+            \begin{figure}[h]
+                \begin{center}
+                    \includegraphics[width=\textwidth]{figures/SafeTix_Quote_1.png}
+                \end{center}
+                \begin{center}
+                    \includegraphics[width=\textwidth]{figures/SafeTix_Quote_2.png}
+                \end{center}
+                \caption{Two quotes from ticketmaster's and NBA's FAQ pages about SafeTix \cite{ticketmaster_safetix_faq} \cite{nba_safetix_faq}}
+                \label{fig:safetix_quotes}
+            \end{figure}
+            \item Barcode changes every 15 seconds, making transfers through screenshots or printouts impossible \cite{nba_safetix_faq}
+            \item However ticket still works offline (once the ticket has been downloaded once) \cite{ticketmaster_safetix_faq}
+        \end{itemize}
+
+        \begin{figure}[h]
+            \centering
+            \begin{subfigure}{.5\textwidth}
+                \centering
+                \includegraphics[width=1\linewidth]{figures/SafeTix_App_Barcode.png}
+                \caption{A screenshot from ticketmaster's app showing SafeTix in action \cite{ticketmaster_mobile_ticketing}}
+                \label{fig:app_barcode}
+            \end{subfigure}%
+            \begin{subfigure}{.5\textwidth}
+                \centering
+                \includegraphics[width=1\linewidth]{figures/Conduition_custom_ticket_app.png}
+                \caption{The Expo app Conduition called TicketGimp Conduition wrote to store and render the extracted tickets \cite{reverse_engineering_ticketmaster}}
+                \label{fig:conduition_custom_app}
+            \end{subfigure}
+            \caption{Official ticketmaster App vs. custom app for extracted tickets}
+        \end{figure}
+    \end{block}
+
+    \begin{block}{How SafeTix got cracked}
+        \begin{quotation}
+            “Screenshots won’t get you in”, but Chrome DevTools will.
+        \end{quotation}
+        \begin{itemize}
+            \item The Rust/Crypto developer Conduition reverse engineered SafeTix
+            \item They managed to extract the ticket of ticketmaster's app into their own app and used that to enter the venue
+            \item They described the process in a blog post \cite{reverse_engineering_ticketmaster}
+            \item The barcode consists of a static bearer token and two rotating numbers \cite{reverse_engineering_ticketmaster}
+            \item Rotating numbers: Standard TOTP (except only valid for 15 seconds instead of 30)
+            \item TOTP secrets can be extracted from WebApp using either debug tools to analyse network traffic or by just reading the terminal output
+        \end{itemize}
+    \end{block}
+\end{column}
+
+\separatorcolumn
+
+\begin{column}{\colwidth}
+
+    \begin{block}{Introducing: \sout{Safe}Tix, the binary hacking challenge}
 
 		\begin{itemize}
 			\item For our project, we decided to recreate a QR code scanner that mimics the behavior of SafeTix. 
@@ -92,7 +150,7 @@
 			Additionally, there is uncertainty about the lifetime of raw tokens, raising concerns about the extent to which SafeTix can prevent ticket fraud.
 			\begin{figure}[h] % "h" means place here
 				\centering
-				\includegraphics[width=0.9\textwidth]{Image_1.png} % Adjust width as needed
+				\includegraphics[width=0.9\textwidth]{figures/Image_1.png} % Adjust width as needed
 				\caption{The Program for dummies I guess ?.}
 				\label{fig:sample}
 			\end{figure}
@@ -102,62 +160,11 @@
 
 	\end{block}
 
-
 \end{column}
 
 \separatorcolumn
 
 \begin{column}{\colwidth}
-
-	\begin{alertblock}{Methodology and Concept}
-
-		How did you solve the problem.
-
-		\begin{enumerate}
-				\item First do this.
-				\item Then this.
-				\item Then that.
-		\end{enumerate}
-
-		This solves the problem nicely! Citation\cite{goli_resprop_2020}
-
-	\end{alertblock}
-
-	\begin{block}{Details about X}
-
-		Give some details about a specific part of your project you think is
-		important or interesting.
-
-	\end{block}
-
-	\begin{block}{Details about Y}
-
-		Same for another part.
-
-	\end{block}
-
-\end{column}
-
-\separatorcolumn
-
-\begin{column}{\colwidth}
-
-	\begin{block}{Results}
-
-		Show some of your results. For reversing tasks: show what you found about
-		the target. For exploitation tasks: show to what results your topic can be
-		used.
-
-	\end{block}
-
-	\begin{exampleblock}{Future Work}
-		How would you improve on your work in the future?
-		\begin{itemize}
-			\item Make everything cleaner.
-			\item Make everything faster.
-			\item Make everything cheaper.
-		\end{itemize}
-	\end{exampleblock}
 
 	\begin{block}{References}
 		%\nocite{*}
