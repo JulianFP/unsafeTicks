@@ -139,18 +139,18 @@
     \begin{block}{Introducing: \sout{Safe}Tix, the binary hacking challenge}
 
 		\begin{itemize}
-			\item For our project, we decided to recreate a QR code scanner that mimics the behavior of SafeTix. 
-			SafeTix, a digital ticketing system used by TicketMaster, claims to enhance security through dynamically rotating QR codes. 
-			However, we found an article that takes a closer look at its implementation and reveals significant vulnerabilities that undermine its effectiveness.
-
-			The Safetix system generates time-based one-time passwords (TOTPs) using an event-specific key and a customer-specific key, with a 15-second time step. 
-			While this is meant to prevent duplication, the raw token containing this data is easily extractable from the web application’s source code. 
-			In fact, TicketMaster logs the token directly to the browser console, making it trivial for attackers to capture and reuse it.
-			This flaw enables unauthorized duplication, resale, or offline storage of tickets—effectively bypassing TicketMaster’s restrictions. 
-			Additionally, there is uncertainty about the lifetime of raw tokens, raising concerns about the extent to which SafeTix can prevent ticket fraud.
-			\begin{figure}[h] % "h" means place here
+			\item For our project, we decided to recreate a ticketing system that mimics the behavior of SafeTix. 
+			For the Web Framework we used Flask, for the ToTP's we used PyOTP, for the authentication we used JWT 
+			and we used Secrets Module to generate cryptographically secure tickets.
+			\begin{figure}[h]
 				\centering
-				\includegraphics[width=0.9\textwidth]{figures/Image_1.png} % Adjust width as needed
+				\includegraphics[width=0.8\textwidth]{figures/WorkFlow.drawio.png}
+				\caption{WorkFlow of the Program}
+				\label{fig:WorkFlow}
+			\end{figure}
+			\begin{figure}[h] 
+				\centering
+				\includegraphics[width=0.9\textwidth]{figures/Image_1.png} 
 				\caption{The Program for dummies I guess ?.}
 				\label{fig:sample}
 			\end{figure}
