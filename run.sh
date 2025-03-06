@@ -21,7 +21,7 @@ box_out() {
 if command -v nix-shell > /dev/null 2>&1; then
     echo "Found nix-shell command. Using it instead of apt..."
     compileClient() {
-        nix-shell shell.nix --run "cmake -S client -B client/build"
+        nix-shell shell.nix --run "cmake -S client -B client/build -DCMAKE_BUILD_TYPE=Release"
         nix-shell shell.nix --run "make -C client/build"
     }
     generateCerts() {
@@ -37,7 +37,7 @@ elif command -v apt-get > /dev/null 2>&1; then
     compileClient() {
         echo "Installing packages required for the client now. Please confirm the installation"
         sudo apt-get install build-essential cmake libssl-dev qtbase5-dev
-        cmake -S client -B client/build
+        cmake -S client -B client/build -DCMAKE_BUILD_TYPE=Release
         make -C client/build
     }
     generateCerts() {

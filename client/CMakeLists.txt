@@ -5,7 +5,9 @@ cmake_minimum_required(VERSION 3.11)
 project(unsafeTicks LANGUAGES CXX)
 
 #set default build type to Debug for development and debugging purposes
-set(default_build_type "Debug")
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug)
+endif()
 
 set(CMAKE_BUILD_DIR "build")
 
