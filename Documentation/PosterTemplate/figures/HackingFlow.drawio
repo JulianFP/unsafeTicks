@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36 Edg/133.0.0.0" version="26.0.16">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64; rv:135.0) Gecko/20100101 Firefox/135.0" version="26.1.0">
   <diagram name="Page-1" id="fbcf5db9-b524-4cd4-e4f3-379dc89c3999">
-    <mxGraphModel dx="815" dy="437" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="none" math="0" shadow="0">
+    <mxGraphModel dx="1402" dy="665" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="none" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -14,7 +14,7 @@
           <mxGeometry x="180" y="168" width="40" height="20" as="geometry" />
         </mxCell>
         <mxCell id="2a0f93b5c73ef8e7-4" value="" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=none;strokeWidth=1;fillColor=#10739E;fontSize=13;fontColor=#FFFFFF;align=center;gradientColor=none;gradientDirection=east;verticalAlign=top;shadow=1;" parent="1" vertex="1">
-          <mxGeometry x="340" y="250" width="220" height="85" as="geometry" />
+          <mxGeometry x="340" y="250" width="220" height="90" as="geometry" />
         </mxCell>
         <mxCell id="2a0f93b5c73ef8e7-5" value="2" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=30;fontColor=#FFFFFF;" parent="1" vertex="1">
           <mxGeometry x="350" y="283" width="40" height="20" as="geometry" />
@@ -44,31 +44,31 @@
           <mxGeometry x="350" y="738" width="40" height="20" as="geometry" />
         </mxCell>
         <mxCell id="2a0f93b5c73ef8e7-14" value="" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=none;strokeWidth=1;fillColor=#F2931E;fontSize=13;fontColor=#FFFFFF;align=center;gradientColor=none;gradientDirection=east;verticalAlign=top;shadow=1;" parent="1" vertex="1">
-          <mxGeometry x="170" y="830" width="220" height="85" as="geometry" />
+          <mxGeometry x="170" y="830" width="220" height="90" as="geometry" />
         </mxCell>
         <mxCell id="2a0f93b5c73ef8e7-15" value="7" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=30;fontColor=#FFFFFF;" parent="1" vertex="1">
           <mxGeometry x="180" y="863" width="40" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="2a0f93b5c73ef8e7-18" value="&lt;h1&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(255, 255, 255), rgb(18, 18, 18));&quot;&gt;User Connects to the Server&amp;nbsp;&lt;/span&gt;&lt;/h1&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;" style="text;html=1;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;strokeColor=none;strokeWidth=4;fillColor=none;gradientColor=#007FFF;fontSize=9;fontColor=#FFFFFF;align=center;" parent="1" vertex="1">
-          <mxGeometry x="220" y="150" width="160" height="91" as="geometry" />
+        <mxCell id="2a0f93b5c73ef8e7-18" value="&lt;h1&gt;Find out ticket encoding&lt;/h1&gt;&lt;div&gt;e.g. by searching through function names in binary, find base32 functions&lt;/div&gt;" style="text;html=1;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;strokeColor=none;strokeWidth=4;fillColor=none;gradientColor=#007FFF;fontSize=9;fontColor=#FFFFFF;align=center;" parent="1" vertex="1">
+          <mxGeometry x="210" y="137" width="160" height="91" as="geometry" />
         </mxCell>
-        <mxCell id="2a0f93b5c73ef8e7-20" value="&lt;h1&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(255, 255, 255), rgb(18, 18, 18));&quot;&gt;Server creates rawTokens&lt;/span&gt;&lt;/h1&gt;&lt;p&gt;For every ticket the user has, the server sends Token+ToTP.&amp;nbsp;&lt;/p&gt;" style="text;html=1;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;strokeColor=none;strokeWidth=4;fillColor=none;gradientColor=#007FFF;fontSize=9;fontColor=#FFFFFF;align=center;" parent="1" vertex="1">
+        <mxCell id="2a0f93b5c73ef8e7-20" value="&lt;h1&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(255, 255, 255), rgb(18, 18, 18));&quot;&gt;Find ticket string function&lt;/span&gt;&lt;/h1&gt;&lt;p&gt;method.Ticket.get_ticket_string&lt;/p&gt;" style="text;html=1;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;strokeColor=none;strokeWidth=4;fillColor=none;gradientColor=#007FFF;fontSize=9;fontColor=#FFFFFF;align=center;" parent="1" vertex="1">
           <mxGeometry x="220" y="364" width="160" height="77" as="geometry" />
         </mxCell>
-        <mxCell id="2a0f93b5c73ef8e7-21" value="&lt;h1&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(255, 255, 255), rgb(18, 18, 18));&quot;&gt;User-App creates QR-code&amp;nbsp;&lt;/span&gt;&lt;/h1&gt;&lt;p&gt;The User Application converts the rawToken+ToTP into a QR-Code&lt;/p&gt;" style="text;html=1;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;strokeColor=none;strokeWidth=4;fillColor=none;gradientColor=#007FFF;fontSize=9;fontColor=#FFFFFF;align=center;" parent="1" vertex="1">
+        <mxCell id="2a0f93b5c73ef8e7-21" value="&lt;h1&gt;Set breakpoint in debugger&lt;/h1&gt;&lt;p&gt;Directly before this function is called&lt;/p&gt;" style="text;html=1;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;strokeColor=none;strokeWidth=4;fillColor=none;gradientColor=#007FFF;fontSize=9;fontColor=#FFFFFF;align=center;" parent="1" vertex="1">
           <mxGeometry x="390" y="479" width="160" height="77" as="geometry" />
         </mxCell>
-        <mxCell id="2a0f93b5c73ef8e7-22" value="&lt;h1&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(255, 255, 255), rgb(18, 18, 18));&quot;&gt;Server validates Ticket&lt;/span&gt;&lt;/h1&gt;&lt;p&gt;The Server checks if the QR-Code is a valid ticket&lt;/p&gt;" style="text;html=1;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;strokeColor=none;strokeWidth=4;fillColor=none;gradientColor=#007FFF;fontSize=9;fontColor=#FFFFFF;align=center;" parent="1" vertex="1">
-          <mxGeometry x="390" y="709.5" width="160" height="77" as="geometry" />
+        <mxCell id="2a0f93b5c73ef8e7-22" value="&lt;h1&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(255, 255, 255), rgb(18, 18, 18));&quot;&gt;Dump memory at these addresses&lt;/span&gt;&lt;/h1&gt;&lt;p&gt;find the ticket token and totp secret in memory&lt;/p&gt;" style="text;html=1;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;strokeColor=none;strokeWidth=4;fillColor=none;gradientColor=#007FFF;fontSize=9;fontColor=#FFFFFF;align=center;" parent="1" vertex="1">
+          <mxGeometry x="390" y="709.5" width="160" height="90.5" as="geometry" />
         </mxCell>
-        <mxCell id="2a0f93b5c73ef8e7-23" value="&lt;h1&gt;User-App secures Ticket&lt;/h1&gt;&lt;p&gt;The Application changes the QR-Code every 15 seconds&lt;/p&gt;" style="text;html=1;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;strokeColor=none;strokeWidth=4;fillColor=none;gradientColor=#007FFF;fontSize=9;fontColor=#FFFFFF;align=center;" parent="1" vertex="1">
-          <mxGeometry x="220" y="590" width="160" height="91" as="geometry" />
+        <mxCell id="2a0f93b5c73ef8e7-23" value="&lt;h1&gt;Dump stack&lt;/h1&gt;&lt;p&gt;Arguments for function call are being written to stack right before jump&lt;/p&gt;" style="text;html=1;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;strokeColor=none;strokeWidth=4;fillColor=none;gradientColor=#007FFF;fontSize=9;fontColor=#FFFFFF;align=center;" parent="1" vertex="1">
+          <mxGeometry x="220" y="595" width="160" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="2a0f93b5c73ef8e7-24" value="&lt;h1&gt;Access granted / denied&lt;/h1&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;" style="text;html=1;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;strokeColor=none;strokeWidth=4;fillColor=none;gradientColor=#007FFF;fontSize=9;fontColor=#FFFFFF;align=center;" parent="1" vertex="1">
-          <mxGeometry x="220" y="850" width="160" height="77" as="geometry" />
+        <mxCell id="2UyEEubd77H-VodIObE1-1" value="&lt;h1&gt;Decode multiple ticket strings&lt;/h1&gt;base32-encoded JSON objects with static token and dynamic otp" style="text;html=1;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;strokeColor=none;strokeWidth=4;fillColor=none;gradientColor=#007FFF;fontSize=9;fontColor=#FFFFFF;align=center;" parent="1" vertex="1">
+          <mxGeometry x="390" y="252.5" width="160" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="2UyEEubd77H-VodIObE1-1" value="&lt;h1&gt;User login&lt;/h1&gt;&lt;p&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(255, 255, 255), rgb(18, 18, 18)); font-size: 9px; font-weight: normal;&quot;&gt;Username and Password are checked&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(255, 255, 255), rgb(18, 18, 18));&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;/p&gt;" style="text;html=1;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;strokeColor=none;strokeWidth=4;fillColor=none;gradientColor=#007FFF;fontSize=9;fontColor=#FFFFFF;align=center;" vertex="1" parent="1">
-          <mxGeometry x="400" y="260" width="160" height="91" as="geometry" />
+        <mxCell id="KQZ5iNF3nNxHl5PEf1Rh-1" value="&lt;h1&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(255, 255, 255), rgb(18, 18, 18));&quot;&gt;Validate in python&lt;/span&gt;&lt;/h1&gt;&lt;p&gt;to make sure that these two secrets generate the same ticket string&lt;/p&gt;" style="text;html=1;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;strokeColor=none;strokeWidth=4;fillColor=none;gradientColor=#007FFF;fontSize=9;fontColor=#FFFFFF;align=center;" vertex="1" parent="1">
+          <mxGeometry x="220" y="834" width="160" height="86" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
