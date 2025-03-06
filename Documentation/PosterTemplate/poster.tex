@@ -23,6 +23,8 @@
 \usepackage{amsmath}
 \usepackage{mathdots}
 \usepackage{mathtools}
+\usepackage{listings}
+\usepackage{xcolor}
 \usepackage{bm}
 \usepackage[normalem]{ulem}
 
@@ -148,14 +150,7 @@
 				\caption{WorkFlow of the Program}
 				\label{fig:WorkFlow}
 			\end{figure}
-			\begin{figure}[h] 
-				\centering
-				\includegraphics[width=0.9\textwidth]{figures/Image_1.png} 
-				\caption{The Program for dummies I guess ?.}
-				\label{fig:sample}
-			\end{figure}
-			By recreating SafeTix, we aimed to make it a notch safer (not logging the ticket to the console) but keep a vulnerability that can be reverse engineered. 
-			\item 
+			\item By recreating SafeTix, we aimed to make it a notch safer (not logging the ticket to the console) but keep a vulnerability that can be reverse engineered. 
 		\end{itemize}
 
 	\end{block}
@@ -166,12 +161,96 @@
 
 \begin{column}{\colwidth}
 
-	\begin{block}{References}
-		%\nocite{*}
-		\footnotesize{\bibliographystyle{ieeetr}\bibliography{poster.bib}}
-	\end{block}
+    \begin{block}{How to Crack}
+        \footnotesize        
+        \textbf{1. Run Script and Analyze:}
+        \begin{itemize}
+            \item Execute the script \texttt{run.sh} to initialize the client application.
+            \item Identify the location of the binary that processes tickets:
+            \begin{lstlisting}[language=bash]
+            find client/build/ -name "unsafeTicks"
+            \end{lstlisting}
+            \item This binary contains logic for generating or validating ticket data.
+        \end{itemize}
+        
+        \textbf{2. Debug the \texttt{unsafeTicks} Binary:}
+        \begin{itemize}
+            \item Use a debugger like \texttt{gdb} or \texttt{radare2} to analyze the binary.
+            \begin{lstlisting}[language=bash]
+            gdb client/build/unsafeTicks
+            \end{lstlisting}
+            \item Identify functions related to ticket validation:
+            \begin{lstlisting}[language=bash]
+            info functions
+            \end{lstlisting}
+            \item Set breakpoints at ticket-processing functions to intercept execution.
+            \item Extract relevant memory contents to obtain ticket data, including:
+            \begin{itemize}
+                \item The \texttt{token} used for authentication.
+                \item The \texttt{totp\_secret}, which is crucial for generating one-time passwords.
+            \end{itemize}
+            \item Analyze how the application constructs and validates tickets.
+        \end{itemize}
+
+        \textbf{3. Dissect the QR Code:}
+        \begin{itemize}
+            \item Determine how the QR code is encoded:
+            \begin{lstlisting}[language=bash]
+            zbarimg ticket_qr.png
+            \end{lstlisting}
+            \item Decode the extracted ticket string from Base32:
+            \begin{lstlisting}[language=bash]
+            echo "TICKET_BASE32_STRING" | base32 -d
+            \end{lstlisting}
+            \item Analyze the ticket structure to understand its components:
+            \begin{itemize}
+                \item Is it a JSON object?
+                \item Does it contain encrypted data?
+                \item Are there timestamps or user-specific elements?
+            \end{itemize}
+        \end{itemize}
+
+        \textbf{4. Modify and Encode a New Ticket:}
+        \begin{itemize}
+            \item Construct a fake ticket by modifying the extracted data:
+            \begin{lstlisting}[language=Python]
+            import base64, json
+
+            fake_ticket = json.dumps({
+                "token": "STOLEN_TOKEN", 
+                "one_time_password": "123456"
+            })
+
+            print(base64.b32encode(fake_ticket.encode()).decode())
+            \end{lstlisting}
+            \item Ensure the new ticket maintains the expected structure.
+            \item Re-encode the modified ticket into a new QR code:
+            \begin{lstlisting}[language=bash]
+            echo "MODIFIED_BASE32_STRING" | qrencode -o fake_ticket.png
+            \end{lstlisting}
+        \end{itemize}
+
+        \textbf{5. Submit the Fake Ticket for Validation:}
+        \begin{itemize}
+            \item Attempt to verify the ticket by sending it to the validation API:
+            \begin{lstlisting}[language=bash]
+            curl "http://server/check_ticket_validity?ticket=GENERATED_BASE32_TICKET"
+            \end{lstlisting}
+            \item Observe the response:
+            \begin{itemize}
+                \item Does the server accept the ticket?
+                \item Are there additional verification mechanisms?
+                \item Does the system use IP tracking or other security measures?
+            \end{itemize}
+            \item If unsuccessful, analyze server responses and refine the approach.
+        \end{itemize}
+
+    \end{block}
 
 \end{column}
+
+
+
 
 \separatorcolumn
 \end{columns}
