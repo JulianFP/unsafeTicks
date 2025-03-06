@@ -10,6 +10,7 @@
 \usetheme{gemini}
 \usecolortheme{mit}
 \usepackage{graphicx}
+\usepackage[justification=centering]{caption}
 \usepackage{subcaption}
 \usepackage{booktabs}
 \usepackage{tikz}
@@ -26,7 +27,17 @@
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage{bm}
-\usepackage[normalem]{ulem}
+\usepackage{ulem}
+\newcommand{\soutthick}[1]{%
+    \renewcommand{\ULthickness}{4pt}%
+       \sout{#1}%
+    \renewcommand{\ULthickness}{.4pt}% Resetting to ulem default
+}
+\newcommand{\soutverythick}[1]{%
+    \renewcommand{\ULthickness}{8pt}%
+       \sout{#1}%
+    \renewcommand{\ULthickness}{.4pt}% Resetting to ulem default
+}
 
 
 % ====================
@@ -46,7 +57,7 @@
 % Title
 % ====================
 
-\title{\sout{Safe}Tix, The Best-Worst QR-Code Ticketing system}
+\title{\soutverythick{Safe}Tix, The Best-Worst QR-Code Ticketing system}
 
 \author{ Julian Partanen \inst{1} \and Alexander Mattingley-Scott \inst{1}}
 
@@ -84,8 +95,8 @@
     \begin{block}{About the original SafeTix}
         \begin{itemize}
             \item Ticketmaster is an American ticket sales and distribution company \cite{ticketmaster_wikipedia}
-            \item For all kinds of events like concerts, sport events, theater and more \cite{ticketmaster_wikipedia}
-            \item Some partners: Taylor Swift, NFL, NHL, NBA, WWE, AEW, theater productions like Harry Potter and the Cursed Child and many more \cite{ticketmaster_wikipedia}
+            \item For all kinds of events like concerts, sport events, theatre performances and more \cite{ticketmaster_wikipedia}
+            \item Some partners: Taylor Swift, NFL, NHL, NBA, WWE, AEW, theatre productions like Harry Potter and the Cursed Child and many more \cite{ticketmaster_wikipedia}
             \item SafeTix: Rotating ticketing system by ticketmaster, initially introduced in 2019 \cite{introducing_safetix} \cite{ticketmaster_safetix_faq} \cite{nba_safetix_faq}
             \begin{figure}[h]
                 \begin{center}
@@ -101,18 +112,16 @@
             \item However ticket still works offline (once the ticket has been downloaded once) \cite{ticketmaster_safetix_faq}
         \end{itemize}
 
-        \begin{figure}[h]
+        \begin{figure}[htbp]
             \centering
-            \begin{subfigure}{.5\textwidth}
-                \centering
-                \includegraphics[width=1\linewidth]{figures/SafeTix_App_Barcode.png}
+            \begin{subfigure}[t]{0.45\textwidth}
+                \includegraphics[width=\textwidth]{figures/SafeTix_App_Barcode.png}
                 \caption{A screenshot from ticketmaster's app showing SafeTix in action \cite{ticketmaster_mobile_ticketing}}
                 \label{fig:app_barcode}
-            \end{subfigure}%
-            \begin{subfigure}{.5\textwidth}
-                \centering
-                \includegraphics[width=1\linewidth]{figures/Conduition_custom_ticket_app.png}
-                \caption{The Expo app Conduition called TicketGimp Conduition wrote to store and render the extracted tickets \cite{reverse_engineering_ticketmaster}}
+            \end{subfigure}
+            \begin{subfigure}[t]{0.45\textwidth}
+                \includegraphics[width=\textwidth]{figures/Conduition_custom_ticket_app.png}
+                \caption{The Expo app TicketGimp Conduition wrote to store and render the extracted tickets \cite{reverse_engineering_ticketmaster}}
                 \label{fig:conduition_custom_app}
             \end{subfigure}
             \caption{Official ticketmaster App vs. custom app for extracted tickets}
@@ -144,41 +153,42 @@
 
 \begin{column}{\colwidth}
 
-    \begin{block}{Introducing: \sout{Safe}Tix, the binary hacking challenge}
+    \begin{block}{Introducing: \soutthick{Safe}Tix, our binary hacking challenge}
 
 		\begin{itemize}
 			\item Our program is a recreation of the Safetix application and consists of:
             
             \textbf{Server:}
             \begin{itemize}
-                \item Built with \textbf{Flask}, written with Python, handles authentication and ticket validation.
-                \item Issues tickets, each linked to a \textbf{TOTP secret}, encoded in \textbf{Base32}.
-                \item Uses \textbf{JWT} for user authentication.
-                \item Has API endpoints for authentication,ticket retrieval and validation.
+                \item Written in \textbf{Python} using the \textbf{Flask} web framework
+                \item Handles authentication, ticket issuing and ticket validation
+                \item Each ticket is returned as an unique \textbf{ticket token} and \textbf{TOTP secret}
+                \item \textbf{flask-JWT-extended} for user authentication, \textbf{pyotp} for generating TOTP secrets
+                \item Deployment with \textbf{gunicorn} and custom bash script for \textbf{SSL}
             \end{itemize}
         
             \textbf{Client:}
             \begin{itemize}
-                \item Written in C++ with \textbf{Qt} for displaying QR codes in a Window.
-                \item Tickets consist of a \textbf{token} and a \textbf{TOTP-generated OTP}.
-                \item Connects to the server via HTTPS to fetch and validate tickets.
-                \item Updates QR codes every 15 seconds.
+                \item Written in \textbf{C++} (in contrary to original app which was a web app)
+                \item \textbf{Qt} UI-framework and \textbf{qrencode} library for displaying QR codes in a window
+                \item \textbf{cpp-httplib} and \textbf{nlohmann's json} libraries for communicating with the server
+                \item \textbf{libcotp} library for generating one time passwords out of TOTP secret
+                \item Regenerates QR codes every 15 seconds
+                \item Bash script installs dependencies and compiles it
             \end{itemize}
-            \item The Program Workflow:
             \begin{figure}[h]
 				\centering
 				\includegraphics[width=0.8\textwidth]{figures/Workflow_v2.png}
-				\caption{WorkFlow of the Program}
+				\caption{Sequence diagram showing the communication between client and server}
 				\label{fig:WorkFlow1}
 			\end{figure}
-            \item The User Window:
             \begin{figure}[h]
 				\centering
-				\includegraphics[width=0.8\textwidth]{figures/QR_Window.png}
-				\caption{User Window with QR-Code}
+				\includegraphics[width=0.7\textwidth]{figures/QR_Window.png}
+				\caption{Client window displaying the current ticket as a QR-code}
 				\label{fig:WorkFlow1}
 			\end{figure}
-            \item By recreating SafeTix, we aimed to make it a notch safer (not logging the ticket to the console) but keep it "Reverse Engineerable".
+            \item By recreating SafeTix, we aimed to make it a notch safer (not logging the ticket to the console) but keep it "Reverse Engineerable"
             
             \item To solve the challenge, please follow this link to our Github repository and follow the instructions in the README:
             \begin{figure}
