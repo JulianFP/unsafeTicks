@@ -124,7 +124,7 @@
             “Screenshots won’t get you in”, but Chrome DevTools will.
         \end{quotation}
         \begin{itemize}
-            \item The Rust/Crypto developer Conduition reverse engineered SafeTix
+            \item The Rust/Crypto developer Conduition reverse engineered SafeTix \cite{conduition}
             \item They managed to extract the ticket of ticketmaster's app into their own app and used that to enter the venue
             \item They described the process in a blog post \cite{reverse_engineering_ticketmaster}
             \item The barcode consists of a static bearer token and two rotating numbers \cite{reverse_engineering_ticketmaster}
@@ -132,6 +132,12 @@
             \item TOTP secrets can be extracted from WebApp using either debug tools to analyse network traffic or by just reading the terminal output
         \end{itemize}
     \end{block}
+
+    \begin{block}{References}
+		%\nocite{*}
+		\footnotesize{\bibliographystyle{ieeetr}\bibliography{poster.bib}}
+	\end{block}
+
 \end{column}
 
 \separatorcolumn
@@ -182,7 +188,6 @@
 \separatorcolumn
 
 \begin{column}{\colwidth}
-
     \begin{block}{How to Crack}
         \begin{figure}[h]
             \centering
