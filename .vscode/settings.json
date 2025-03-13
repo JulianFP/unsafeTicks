@@ -1,3 +1,4 @@
 {
-    "cmake.sourceDirectory": "/home/m4mmsy/ticketmaster-but-worse/client"
+    "cmake.sourceDirectory": "/home/m4mmsy/ticketmaster-but-worse/client",
+    "sonarlint.pathToCompileCommands": "${workspaceFolder}/client/build/compile_commands.json"
 }
