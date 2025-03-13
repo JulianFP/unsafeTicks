@@ -24,7 +24,14 @@
 \usepackage{mathdots}
 \usepackage{mathtools}
 \usepackage{bm}
+\usepackage{ulem}
 \usepackage[colorlinks=true, linkcolor=black, urlcolor=NavyBlue, citecolor=black]{hyperref}
+
+\newcommand{\soutthick}[1]{%
+    \renewcommand{\ULthickness}{3pt}%
+       \sout{#1}%
+    \renewcommand{\ULthickness}{.3pt}% Resetting to ulem default
+}
 
 \newcommand{\MatVal}[1]{\bm{\mathit{#1}}}
 
@@ -32,13 +39,13 @@
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
 
-\title{Binary Hacking: Your Topic Here}
+\title{\soutthick{Safe}Tix, The Best-Worst QR-Code Ticketing system}
 
 \author{
-\IEEEauthorblockN{Your Name Here}
-\IEEEauthorblockA{\textit{Beginner's Practical, B.Sc. Computer Science} \\
+\IEEEauthorblockN{Julian Partanen and Alexander Mattingley-Scott}
+\IEEEauthorblockA{\textit{Beginner's Practical in Binary Hacking, B.Sc. Computer Science} \\
 \textit{Heidelberg University, Germany}\\
-your.email@here.com}
+\href{mailto:me272@uni-heidelberg.de}{me272@uni-heidelberg.de}, \href{mailto:tt249@uni-heidelberg.de}{tt249@uni-heidelberg.de}}
 }
 
 \maketitle

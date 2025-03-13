@@ -100,10 +100,10 @@
             \item SafeTix: Rotating ticketing system by ticketmaster, initially introduced in 2019 \cite{introducing_safetix} \cite{ticketmaster_safetix_faq} \cite{nba_safetix_faq}
             \begin{figure}[h]
                 \begin{center}
-                    \includegraphics[width=\textwidth]{figures/SafeTix_Quote_1.png}
+                    \includegraphics[width=\textwidth]{../figures/SafeTix_Quote_1.png}
                 \end{center}
                 \begin{center}
-                    \includegraphics[width=\textwidth]{figures/SafeTix_Quote_2.png}
+                    \includegraphics[width=\textwidth]{../figures/SafeTix_Quote_2.png}
                 \end{center}
                 \caption{Two quotes from ticketmaster's and NBA's FAQ pages about SafeTix \cite{ticketmaster_safetix_faq} \cite{nba_safetix_faq}}
                 \label{fig:safetix_quotes}
@@ -115,12 +115,12 @@
         \begin{figure}[htbp]
             \centering
             \begin{subfigure}[t]{0.45\textwidth}
-                \includegraphics[width=\textwidth]{figures/SafeTix_App_Barcode.png}
+                \includegraphics[width=\textwidth]{../figures/SafeTix_App_Barcode.png}
                 \caption{A screenshot from ticketmaster's app showing SafeTix in action \cite{ticketmaster_mobile_ticketing}}
                 \label{fig:app_barcode}
             \end{subfigure}
             \begin{subfigure}[t]{0.45\textwidth}
-                \includegraphics[width=\textwidth]{figures/Conduition_custom_ticket_app.png}
+                \includegraphics[width=\textwidth]{../figures/Conduition_custom_ticket_app.png}
                 \caption{The Expo app TicketGimp Conduition wrote to store and render the extracted tickets \cite{reverse_engineering_ticketmaster}}
                 \label{fig:conduition_custom_app}
             \end{subfigure}
@@ -178,13 +178,13 @@
             \end{itemize}
             \begin{figure}[h]
 				\centering
-				\includegraphics[width=0.8\textwidth]{figures/Workflow_v2.png}
+				\includegraphics[width=0.8\textwidth]{../figures/Workflow_v2.png}
 				\caption{Sequence diagram showing the communication between client and server}
 				\label{fig:WorkFlow1}
 			\end{figure}
             \begin{figure}[h]
 				\centering
-				\includegraphics[width=0.7\textwidth]{figures/QR_Window.png}
+				\includegraphics[width=0.7\textwidth]{../figures/QR_Window.png}
 				\caption{Client window displaying the current ticket as a QR-code}
 				\label{fig:WorkFlow1}
 			\end{figure}
@@ -193,7 +193,7 @@
             \item To solve the challenge, please follow this link to our Github repository and follow the instructions in the README:
             \begin{figure}
                 \centering
-                \includegraphics[width=0.5\textwidth]{figures/github_qr_code.png}
+                \includegraphics[width=0.5\textwidth]{../figures/github_qr_code.png}
                 \caption{https://github.com/JulianFP/unsafeTicks}
                 \label{fig:GithubQRCode}
             \end{figure}
@@ -208,43 +208,43 @@
     \begin{block}{How to Crack}
         \begin{figure}[h]
             \centering
-            \includegraphics[width=0.7\textwidth]{figures/HackingFlow.png}
+            \includegraphics[width=0.7\textwidth]{../figures/HackingFlow.png}
             \caption{An example of how the ticket could be extracted from the program}
             \label{fig:HackingFlow}
         \end{figure}
         \begin{figure}[h]
             \centering
-            \includegraphics[width=0.7\textwidth]{figures/Hacking_step_1.png}
+            \includegraphics[width=0.7\textwidth]{../figures/Hacking_step_1.png}
             \caption{Step 1: Find base32 functions}
             \label{fig:HackingStep1}
         \end{figure}
         \begin{figure}[h]
             \centering
-            \includegraphics[width=0.95\textwidth]{figures/Hacking_step_2.png}
+            \includegraphics[width=0.95\textwidth]{../figures/Hacking_step_2.png}
             \caption{Step 2: Decode ticket string from QR-Code}
             \label{fig:HackingStep2}
         \end{figure}
         \begin{figure}[h]
             \centering
-            \includegraphics[width=0.95\textwidth]{figures/Hacking_step_3.png}
+            \includegraphics[width=0.95\textwidth]{../figures/Hacking_step_3.png}
             \caption{Step 3: Find the function that needs both the ticket token and the TOTP secret as an argument}
             \label{fig:HackingStep3}
         \end{figure}
         \begin{figure}[h]
             \centering
-            \includegraphics[width=0.95\textwidth]{figures/Hacking_step_4.png}
+            \includegraphics[width=0.95\textwidth]{../figures/Hacking_step_4.png}
             \caption{Step 4: Startup debugger and set breakpoint}
             \label{fig:HackingStep4}
         \end{figure}
         \begin{figure}[h]
             \centering
-            \includegraphics[width=0.95\textwidth]{figures/Hacking_step_5.png}
+            \includegraphics[width=0.95\textwidth]{../figures/Hacking_step_5.png}
             \caption{Step 5: Stack dump}
             \label{fig:HackingStep5}
         \end{figure}
         \begin{figure}[h]
             \centering
-            \includegraphics[width=0.95\textwidth]{figures/Hacking_step_6.png}
+            \includegraphics[width=0.95\textwidth]{../figures/Hacking_step_6.png}
             \caption{Step 6: Memory dump containing TOTP secret}
             \label{fig:HackingStep6}
         \end{figure}
