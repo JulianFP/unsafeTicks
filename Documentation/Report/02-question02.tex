@@ -1,26 +1,70 @@
-\section{How we created SafeTix}
-\begin{figure}[h]
+\section{How we created \sout{Safe}Tix}
+The basic workflow of our Application is shown in Figure \ref{fig:WorkFlow1}
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.25\textwidth]{../figures/github_qr_code.png}
-    \caption{Example image}
-    \label{fig:screenshot}
-\end{figure}
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.4\textwidth]{../figures/Workflow_v2.png}
+    \includegraphics[width=0.2\textwidth]{../figures/Workflow_v2.png}
     \caption{Sequence diagram showing the communication between client and server}
     \label{fig:WorkFlow1}
 \end{figure}
-\subsection{The Server application}
-What the server side does and what we use for security
-\subsection{The Client Application}
-what the client side does and what we use for security
-\begin{figure}[h]
+\subsection{The Server Application}
+
+The server application is responsible for managing user authentication, ticket generation, and ticket validation. It is built using:
+\begin{itemize}
+    \item \texttt{Flask}: A lightweight web framework used to handle routing, requests, and responses.
+    \item \texttt{pyotp}: A library used to generate and verify time-based one-time passwords (TOTP) for ticket validation.
+    \item \texttt{flask\_jwt\_extended}: Used for managing JWT authentication, including creating, verifying, and handling access tokens.
+    \item \texttt{secrets}: Used to securely generate random tokens for ticket creation and JWT secrets.
+    \item \texttt{base32}: Used for encoding and decoding ticket information.
+\end{itemize}
+
+\subsubsection{Server Initialization and Configuration}
+The server initializes with a secret key for JWT authentication and uses \texttt{JWTManager} from \texttt{flask\_jwt\_extended} to manage token generation and user authentication. The server stores ticket data and user credentials in dictionaries, simulating a database.
+
+\subsubsection{Login and Token Generation}
+When a user attempts to log in, the server checks the provided username and password. If valid, it generates a JWT token, which is returned to the client for subsequent authenticated requests.
+
+\subsubsection{Ticket Generation}
+Tickets are dynamically generated for users. Each ticket is associated with a token, and a unique time-based one-time password (TOTP) secret is generated using \texttt{pyotp.random\_base32}. The ticket token and TOTP secret are stored in the server's memory (simulated database).
+
+\subsubsection{Get Tickets}
+The server provides a \texttt{GET} endpoint to return a list of tickets for an authenticated user. The server responds with the ticket token and its associated TOTP secret.
+
+\subsubsection{Ticket Validation}
+To validate a ticket, the server checks if the ticket exists and verifies the provided one-time password (TOTP) against the ticket's stored secret. The server uses \texttt{pyotp.TOTP} to verify the validity of the TOTP. 
+
+\subsubsection{Security and Authentication}
+JWT tokens are used to authenticate users for most endpoints. The server relies on \texttt{flask\_jwt\_extended} to handle the creation, storage, and validation of JWT tokens. The server also uses SSL/TLS encryption for secure communication.
+
+
+\subsection{Client-Side Operation}
+The client application is built using a few key libraries:
+\begin{itemize}
+    \item \texttt{Qt5 Widgets}: Used for the graphical user interface, including rendering images and managing user interactions.
+    \item \texttt{qrencode}: Used for encoding ticket data into QR codes for easy display and scanning.
+    \item \texttt{httplib}: A lightweight HTTP library that handles communication with the server, including sending and receiving requests securely.
+    \item \texttt{nlohmann/json}: Used for parsing and handling JSON data, which is the format for the data exchanged with the server.
+\end{itemize}
+
+\subsubsection{QR Code Generation and Display}
+The client generates a QR code for each ticket, which encodes the ticket data (including one-time password) into a visual QR code. This QR code is displayed in the user interface using the \texttt{Qt5 Widgets}.
+The QR code is being updated every 15 seconds to ensure that the one-time password (TOTP) stays valid.
+
+\subsubsection{Ticket Validation}
+To validate a ticket, the client communicates with the server to check if the ticket is valid. The ticket data is securely transmitted and the server response is parsed. If the ticket is valid, the client displays a success message; otherwise, an error message is shown on the UI.
+
+\subsubsection{Server Communication and Initialization}
+The client establishes a secure connection to the server using the \texttt{httplib::SSLClient}. The client retrieves user-specific data, such as tickets, from the server and processes the information in \texttt{json} format. Upon receiving the data, the client updates the interface by displaying the first ticket’s QR code.
+
+\subsubsection{Client-Side Communication Process}
+The client-side code interacts with the server through multiple steps, including logging in, obtaining tickets, and validating ticket status. Upon successful login, the server's response is parsed to extract the authentication token. This token is then used in subsequent requests to retrieve ticket information. Each ticket contains a one-time password (TOTP), which is dynamically generated and encoded using Base32. The resulting Base32-encoded string is displayed as a QR code for the user to scan.
+
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.3\textwidth]{../figures/QR_Window.png}
     \caption{Client window displaying the current ticket as a QR-code}
     \label{fig:WorkFlow1}
 \end{figure}
+
 \subsection{The Vulnerability}
 What the problem with the application is.
 

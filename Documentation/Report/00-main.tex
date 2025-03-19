@@ -52,9 +52,12 @@
 \maketitle
 
 \begin{abstract}
-  This report presents the development of a binary hacking challenge inspired by Ticketmaster's SafeTix, a rotating QR-code ticketing system. 
-  It shortly introduces the original Ticketmaster system, including a discussion of its security vulnerabilities and how it was compromised. 
-  We then describe the design and functionality of our own ticketing system, highlighting its vulnerabilities and we give a detailed walkthrough of how to reverse engineer our Application.
+  This report presents the development of a binary hacking challenge inspired by the Ticketmaster SafeTix system, 
+  as discussed by Conduition in his report on \url{https://conduition.io/coding/ticketmaster/}. 
+  Conduition details how SafeTix works and describes the reverse engineering process used to extract offline tickets. 
+  Our application simulates SafeTix, closely mirroring its structure and vulnerabilities, making it similarly “hackable.” 
+  The system consists of both server-side and client-side applications, and can be reverse engineered to extract ticket TOTP secrets.
+
 \end{abstract}
 
 % \begin{IEEEkeywords}

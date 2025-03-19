@@ -1,4 +1,6 @@
 \section{How to reverse engineer it}
+The Hackflow is shown in Figure \ref{fig:HackingFlow}. While there may be multiple methods of reverse engineering the application, our approach focuses on extracting the TOTP secret.
+
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.3\textwidth]{../figures/HackingFlow.png}
@@ -6,8 +8,7 @@
     \label{fig:HackingFlow}
 \end{figure}
 \subsection{First steps}
-Run application, look into the client application by debugging it, find function names
-and the hint with bin32.
+
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.3\textwidth]{../figures/Hacking_step_1.png}
@@ -20,6 +21,8 @@ and the hint with bin32.
     \caption{Step 2: Decode ticket string from QR-Code}
     \label{fig:HackingStep2}
 \end{figure}
+\subsection{Second steps}
+
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.4\textwidth]{../figures/Hacking_step_3.png}
