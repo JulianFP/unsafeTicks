@@ -1,42 +1,41 @@
 \section{How we created \sout{Safe}Tix}
-The basic workflow of our Application is shown in Figure \ref{fig:WorkFlow2}
+\subsection{The general architecture of our application}
+
+This challenge consists of a client and a server component, however the user should restrict their hacking attempts onto the client.
+
+The basic workflow between client and server is shown in Figure \ref{fig:WorkFlow2}
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.2\textwidth]{../figures/Workflow_v2.png}
     \caption{Sequence diagram showing the communication between client and server}
     \label{fig:WorkFlow2}
 \end{figure}
-\subsection{The Server Application}
-
-The server application is responsible for managing user authentication, ticket generation, and ticket validation. It is built using:
-\begin{itemize}
-    \item \texttt{Flask}: A lightweight web framework used to handle routing, requests, and responses.
-    \item \texttt{pyotp}: A library used to generate and verify time-based one-time passwords (TOTP) for ticket validation.
-    \item \texttt{flask\_jwt\_extended}: Used for managing JWT authentication, including creating, verifying, and handling access tokens.
-    \item \texttt{secrets}: Used to securely generate random tokens for ticket creation and JWT secrets.
-    \item \texttt{base32}: Used for encoding and decoding ticket information.
-\end{itemize}
 
 \subsubsection{Server Initialization and Configuration}
-The server initializes with a secret key for JWT authentication and uses \texttt{JWTManager} from \texttt{flask\_jwt\_extended} to manage token generation and user authentication. The server stores ticket data and user credentials in dictionaries, simulating a database.
+The server initializes with a secret key for JSON web token (JWT) generation and sets up the simulated database with one user who owns one ticket.
 
-\subsubsection{Login and Token Generation}
-When a user attempts to log in, the server checks the provided username and password. If valid, it generates a JWT token, which is returned to the client for subsequent authenticated requests.
+\subsubsection{Client logs in and gets JWT token}
+When a user attempts to log in, the server checks the username and password that the client provided. If valid, it generates a JWT token, which is returned to the client for subsequent authenticated requests (step 1 in \ref{fig:WorkFlow2}.
 
-\subsubsection{Ticket Generation}
-Tickets are dynamically generated for users. Each ticket is associated with a token, and a unique time-based one-time password (TOTP) secret is generated using \texttt{pyotp.random\_base32}. The ticket token and TOTP secret are stored in the server's memory (simulated database).
+\subsubsection{Client queries tickets from server}
+An authenticated client can ask for a list of all tickets. The server uses the signature of the JWT token to lookup the correct user and returns all tickets this user owns. In this stage, each ticket consists of a ticket token as well as a TOTP secret which both are static.
 
-\subsubsection{Get Tickets}
-The server provides a \texttt{GET} endpoint to return a list of tickets for an authenticated user. The server responds with the ticket token and its associated TOTP secret.
+\subsubsection{Client generates dynamic QR-code}
+The one-time-password is now generated from the TOTP secret client-side and then encoded into a string and rendered as a QR-code which is displayed to the user.
 
-\subsubsection{Ticket Validation}
-To validate a ticket, the server checks if the ticket exists and verifies the provided one-time password (TOTP) against the ticket's stored secret. The server uses \texttt{pyotp.TOTP} to verify the validity of the TOTP. 
-
-\subsubsection{Security and Authentication}
-JWT tokens are used to authenticate users for most endpoints. The server relies on \texttt{flask\_jwt\_extended} to handle the creation, storage, and validation of JWT tokens. The server also uses SSL/TLS encryption for secure communication.
+\subsubsection{Server validates QR-code string}
+The client sends the QR-code string which contains the static ticket token as well as the dynamic one-time-password to the server which then looks up the ticket using the ticket token and then verifies the one-time-password using the with the ticket associated TOTP secret.
 
 
-\subsection{Client-Side Operation}
+\subsection{The Server Application}
+The server application is responsible for managing user authentication, ticket generation, and ticket validation. It is built with the Python \textbf{Flask} web framework using the \textbf{flask-JWT-extended} library for authentication. It's main route returns the tickets to the logged-in user. Each ticket object consists of a static ticket token as well as the static TOTP secret used to generate one-time-passwords on the client-side. A second route takes a ticket string from the client which has the ticket token as well as a one-time-password encoded into it and returns whether it is a valid ticket. We used the \textbf{pyotp} library to generate TOTP secrets and verify the one-time-passwords sent by the client against them.
+
+To simulate a user database we just used a Python dictionary which contains one user with it's password and a second dict which gets populated with one ticket at startup time of the server. For the sake of this challenge this is absolutely enough and could be easily replaced with an actual database. While we have a login route that the client needs to call first to get a JSON Web Token to authenticate to the get\_tickets route, an application would also need a way for users to sign up and buy tickets which we also don't simulate.
+
+The backend is deployed by a bash script that generates a self-signed SSL certificate using openssl for it and starts the backend using \textbf{gunicorn}. This should make it a lot harder to solve this challenge by just sniffing the traffic between client and server using for example Wireshark and extracting the TOTP secret this way. Since the challenge runs locally we had the added difficulty of managing self-signed certificates since the client needs to trust the certificate authority that generated the servers SSL certificate. We solved this by adding the CA to the client's trusted CA list through a command line option when starting the client and by asking the user to not tamper with this CLI argument when trying to solve this challenge since adding your own CA here would make man-in-the-middle attacks very trivial.
+
+
+\subsection{Client Application}
 The client application is built using a few key libraries:
 \begin{itemize}
     \item \texttt{Qt5 Widgets}: Used for the graphical user interface, including rendering images and managing user interactions.

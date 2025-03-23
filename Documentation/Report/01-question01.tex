@@ -1,18 +1,11 @@
 \section{The Original Safetix from Ticketmaster}
-Ticketmaster is a leading American ticket sales and distribution company, well-known for selling tickets for a wide variety of events, 
-including concerts, sports events, theater performances, and more. Their partners include major names such as Taylor Swift, 
-the NFL, NHL, NBA, WWE, AEW, and popular theater productions like \textit{Harry Potter and the Cursed Child}, among many others. 
+Ticketmaster is a leading American ticket sales and distribution company, well-known for facilitating ticketing systems for a wide variety of events, 
+including concerts, sports events, theater performances, and more. Their list of partners includes major names such as Taylor Swift, 
+the NFL, NHL, NBA, WWE, AEW, and popular theater productions like \textit{Harry Potter and the Cursed Child} \cite{ticketmaster_wikipedia}. 
 
-\subsection{Why they introduced Offline Tickets}
-Ticketmaster introduced offline tickets to address one of the major pain points of digital ticketing: the dependency on an active internet connection. 
-Attendees often face connectivity issues at crowded venues, where network overload or poor reception can make it difficult to access mobile tickets. 
-By allowing tickets to be saved and accessed offline, Ticketmaster aimed to provide a more reliable and seamless experience for users, 
-ensuring they can still access their tickets even in areas with spotty or no internet coverage. 
-This move also helps to cater to customers who may have concerns about data privacy or simply prefer not to rely on continuous connectivity for event access.
+\subsection{The SafeTix ticketing system}
+SafeTix is a rotating ticketing system by Ticketmaster initially introduced in 2019. It's goal is allegedly to keep tickets safe from theft and to undermine scalping of tickets by rotating the ticket barcode every 15 seconds. This makes screenshots, photos or printouts worthless rendering it impossible to steal tickets, but also to resell them \cite{introducing_safetix} \cite{ticketmaster_safetix_faq} \cite{nba_safetix_faq}. 
 
-\subsection{How they made Offline Tickets Secure}
-To address the security concerns and challenges posed by offline tickets, Ticketmaster introduced SafeTix as an "improvement" over the traditional ticketing systems, a screenshot of Safetix can be seen in Figure
-\ref{fig:app_barcode}.
 \begin{figure}[H]
     \begin{center}        
     \includegraphics[scale = 0.3]{../figures/SafeTix_App_Barcode.png}
@@ -20,11 +13,9 @@ To address the security concerns and challenges posed by offline tickets, Ticket
     \label{fig:app_barcode}
     \end{center}
 \end{figure}
-While the old system allowed users to print tickets as PDFs or take screenshots, which could be easily shared or resold, SafeTix aims to eliminate these vulnerabilities by introducing a dynamic and rotating barcode. 
-This rotating ticketing system was designed to provide a more secure, yet user-friendly alternative to static PDF tickets, and to combat issues like fraud and ticket scalping.
 
-Ticketmaster markets SafeTix as an advanced solution to combat ticket fraud and scalping.
-However, these marketing claims are often seen as exaggerated, as shown in Figure \ref{fig:safetix_quotes}.
+Ticketmaster made some dubious marketing claims about it's ticketing system, for example claiming that SafeTix also reduces the risk of illegal counterfeit tickets (\ref{fig:safetix_quotes}) (a static ticket that is cryptographically sound shouldn't be any more easier to fake?) or claiming that the gliding movement over the barcode (see screenshot in \ref{fig:app_barcode}) makes the ticket somehow 'alive' \cite{nba_safetix_faq} \cite{ticketmaster_safetix_faq}.
+
 \begin{figure}[H]
     \begin{center}
         \includegraphics[width=0.5\textwidth]{../figures/SafeTix_Quote_1.png}
@@ -35,15 +26,20 @@ However, these marketing claims are often seen as exaggerated, as shown in Figur
     \caption{Two quotes from Ticketmaster's and the NBA's FAQ pages about SafeTix \cite{ticketmaster_safetix_faq} \cite{nba_safetix_faq}}
     \label{fig:safetix_quotes}
 \end{figure}
-Some critics point out that the technology’s true purpose is more about limiting ticket transfers and keeping users within Ticketmaster's closed ecosystem.
+
+\subsection{SafeTix still works offline}
+One major issue with rotating tickets like these that other ticketing systems faced in the past is the always-online requirement of these tickets. This is a problem because attendees often face connectivity issues at crowded venues, where network overload or poor reception can make it difficult to access online tickets. Ticketmaster addressed this by making SafeTix work entirely offline after the initial download of the ticket which can be done ahead of time with a stable internet connection at home. This is explained in their FAQ to ensure the user that they don't have to worry about not being able to access their ticket on the venue (\ref{fig:safetix_quotes}) \cite{ticketmaster_safetix_faq}. 
 
 \subsection{How it got reverse-engineered}
+The problem with SafeTix is, that it not only limits fraud and theft, but also severely limits the users options. Reselling or gifting already bought tickets outside of Ticketmaster's own ticket-resale marketplace after for example getting sick and not being able to attend to that event is not possible anymore. Ticketmaster's marketplace highly restricts selling prices and Ticketmaster themselves take a cut of every transaction (essentially profiting twice for the same ticket). SafeTix also introduces a lock-in into Ticketmaster's mobile application which requires an account to be used and, according to Exodus, contains 8 data trackers and requires 25 different permissions (on version 260.0 of the Android app) \cite{exodus}. Apart from these third-parties Ticketmaster themselves also learns a lot of data about the user, for example their contact information which could be used to build social graphs \cite{reverse_engineering_ticketmaster}.
+
+The Rust- and Crypto-developer Conduition was not happy with this and decided to reverse engineer SafeTix \cite{conduition}. He was motivated by the fact that SafeTix works offline which suggests that the seed information from which the rotating tickets are generated must be stored client-side and 'just' needs to be extracted \cite{reverse_engineering_ticketmaster}.
+
 After inspecting the barcodes, Conduition found that the format was simple PDF417 barcodes that encode UTF-8 text. 
-The blue bar sweeping across the barcode was just a CSS animation, 
-not actually preventing screenshots, because PDF417 has error correction built in.
+The blue bar sweeping across the barcode was just a CSS animation, not actually preventing screenshots, because PDF417 has error correction built in.
 
 He noticed that the barcodes generated by the Ticketmaster web app contained four distinct pieces of data, 
-delimited by colons—Base64-encoded data, followed by two six-digit numbers and a Unix timestamp. 
+delimited by colons: Base64-encoded data, followed by two six-digit numbers and a Unix timestamp. 
 The first two six-digit numbers appeared similar to Time-based One-Time Passwords (TOTPs), 
 likely generated from different secrets using the timestamp.
 
@@ -55,7 +51,7 @@ After decoding the token, Conduition identified the properties, including the be
 The two TOTPs were constructed from an eventKey and customerKey, and the timestamp was used to verify the barcodes. 
 He validated this by generating TOTPs using the identified secrets, matching the TOTPs in the barcode, 
 and concluding that with the bearer token and the TOTP secrets, valid barcodes could be generated.
-For the sake of not using Ticketsmasters App, he even made his own App that shows his current Barcode as can be seen in Figure \ref{fig:conduition_custom_app}.
+For the sake of not using Ticketsmasters App, he even made his own App that can store his ticket instead of Ticketmaster's app and shows his current Barcode as can be seen in Figure \ref{fig:conduition_custom_app} \cite{reverse_engineering_ticketmaster}.
 
 \begin{figure}[H]
     \begin{center}
