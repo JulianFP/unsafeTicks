@@ -1,8 +1,18 @@
-\section{How SafeTix could be made safer}
-First of all we would like to point out that we don't agree with the fundamental goal of SafeTix: Restricting the ticket ownership and selling opportunities to their own application and marketplace is incredibly anti-consumer and thus not a good approach to solve the problem of ticket theft and scalping.
+\section{How SafeTix Could Be Made Safer}
 
-Good alternative strategies would be to educate the user during and after the buying process that they should keep the ticket barcode secret, to hide the barcode by default in the official app and only have a button to reveal it for a short period of time. Alternative strategies against scalping could be to limit the amount of tickets that are allowed to be purchased by each user account or to make the tickets available for purchase in many small batches over a longer period of time.
+One approach to improving security is to educate users during and after the purchasing process 
+about keeping their ticket barcode private. Additionally, the barcode could be hidden by default 
+in the official app, with a button to reveal it only for a short period. To prevent scalping, 
+the number of tickets per user account could be limited, or tickets could be released in smaller 
+batches over an extended period.
 
-However if we were to ignore this and just tried to make it more difficult to crack SafeTix we might look into proper Digital Rights Management (DRM) systems to secure the tickets. This however might prove quite complicated, easier strategies would be to limit the offline use of these tickets by for example rotating the ticket token \textit{server-side} every 24 hours or so. This would of course make the application less user-friendly since now Ticketmaster would have to tell their users to download the tickets at most 24 hours before the event if they want them to still work offline, not earlier since then the ticket would not be valid anymore once the user shows it at the venue.
+If we were to ignore these strategies and focus solely on making SafeTix harder to crack, we might
+consider using proper Digital Rights Management (DRM) systems to secure the tickets. However, 
+this could be complex. A simpler approach would be to limit offline ticket use by rotating the 
+ticket token \textit{server-side} every 24 hours. This would reduce convenience, as Ticketmaster 
+would have to inform users that offline tickets must be downloaded no more than 24 hours before 
+the event; otherwise, they would become invalid.
 
-At the end of the day if the ticket should be stored on the client for extended periods of times and work completely offline we don't think that there is a way to make it totally impossible for users to extract their tickets from the application. Making it more difficult than just reading the ticket token the chrome web console would be a good start.
+Ultimately, if tickets need to be stored on the client for long periods and work entirely offline, 
+it is unlikely that extraction can be made completely impossible. However, making it more difficult 
+than simply reading the ticket token from the Chrome web console would be a good first step.
