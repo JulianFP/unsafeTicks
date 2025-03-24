@@ -1,69 +1,57 @@
 \section{How we created \sout{Safe}Tix}
 \subsection{The general architecture of our application}
 
-This challenge consists of a client and a server component, however the user should restrict their hacking attempts onto the client.
-
-The basic workflow between client and server is shown in Figure \ref{fig:WorkFlow2}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.2\textwidth]{../figures/Workflow_v2.png}
+    \includegraphics[width=0.85\linewidth]{../figures/Workflow_v2.png}
     \caption{Sequence diagram showing the communication between client and server}
     \label{fig:WorkFlow2}
 \end{figure}
+
+This challenge consists of a client and a server component, however the user should restrict their hacking attempts onto the client.
+
+The basic workflow between client and server is shown in Figure \ref{fig:WorkFlow2}
 
 \subsubsection{Server Initialization and Configuration}
 The server initializes with a secret key for JSON web token (JWT) generation and sets up the simulated database with one user who owns one ticket.
 
 \subsubsection{Client logs in and gets JWT token}
-When a user attempts to log in, the server checks the username and password that the client provided. If valid, it generates a JWT token, which is returned to the client for subsequent authenticated requests (step 1 in \ref{fig:WorkFlow2}.
+When a user attempts to log in, the server checks the username and password that the client provided. If valid, it generates a JWT token, which is returned to the client for subsequent authenticated requests (step 1 and 2 in Fig. \ref{fig:WorkFlow2}).
 
 \subsubsection{Client queries tickets from server}
-An authenticated client can ask for a list of all tickets. The server uses the signature of the JWT token to lookup the correct user and returns all tickets this user owns. In this stage, each ticket consists of a ticket token as well as a TOTP secret which both are static.
+An authenticated client can ask for a list of all tickets. The server uses the signature of the JWT token to lookup the correct user and returns all tickets this user owns. In this stage, each ticket consists of a ticket token as well as a TOTP secret which both are static (step 3 and 4 in Fig. \ref{fig:WorkFlow2}).
 
 \subsubsection{Client generates dynamic QR-code}
-The one-time-password is now generated from the TOTP secret client-side and then encoded into a string and rendered as a QR-code which is displayed to the user.
+The one-time-password is now generated from the TOTP secret client-side and then encoded into a string and rendered as a QR-code which is displayed to the user (step 5 in Fig. \ref{fig:WorkFlow2}).
 
 \subsubsection{Server validates QR-code string}
-The client sends the QR-code string which contains the static ticket token as well as the dynamic one-time-password to the server which then looks up the ticket using the ticket token and then verifies the one-time-password using the with the ticket associated TOTP secret.
+The client sends the QR-code string which contains the static ticket token as well as the dynamic one-time-password to the server which then looks up the ticket using the ticket token and then verifies the one-time-password using the with the ticket associated TOTP secret (step 6 and 7 in Fig. \ref{fig:WorkFlow2}).
 
 
 \subsection{The Server Application}
-The server application is responsible for managing user authentication, ticket generation, and ticket validation. It is built with the Python \textbf{Flask} web framework using the \textbf{flask-JWT-extended} library for authentication. It's main route returns the tickets to the logged-in user. Each ticket object consists of a static ticket token as well as the static TOTP secret used to generate one-time-passwords on the client-side. A second route takes a ticket string from the client which has the ticket token as well as a one-time-password encoded into it and returns whether it is a valid ticket. We used the \textbf{pyotp} library to generate TOTP secrets and verify the one-time-passwords sent by the client against them.
+The server application is responsible for managing user authentication, ticket generation, and ticket validation. It is built with the Python \textbf{Flask} web framework and uses the \textbf{flask-JWT-extended} library for authentication. It's main route returns the tickets to the logged-in user. Each ticket object consists of a static ticket token as well as the static TOTP secret used to generate dynamic one-time-passwords on the client-side. A second route takes a ticket string from the client which has the ticket token as well as a one-time-password encoded into it and returns whether it is a valid ticket or not. We use the \textbf{pyotp} library to generate TOTP secrets and to verify the one-time-passwords sent by the client against them.
 
-To simulate a user database we just used a Python dictionary which contains one user with it's password and a second dict which gets populated with one ticket at startup time of the server. For the sake of this challenge this is absolutely enough and could be easily replaced with an actual database. While we have a login route that the client needs to call first to get a JSON Web Token to authenticate to the get\_tickets route, an application would also need a way for users to sign up and buy tickets which we also don't simulate.
+To simulate a user database we just used a Python dictionary which contains one user with it's password and a second dict which gets populated with one ticket during startup of the server. For the sake of this challenge this is absolutely enough and could be easily replaced with an actual database. While we have a login route that the client needs to call first to get a JSON Web Token to authenticate to the get\_tickets route, an application would also need a way for users to sign up and buy tickets which we also don't simulate.
 
-The backend is deployed by a bash script that generates a self-signed SSL certificate using openssl for it and starts the backend using \textbf{gunicorn}. This should make it a lot harder to solve this challenge by just sniffing the traffic between client and server using for example Wireshark and extracting the TOTP secret this way. Since the challenge runs locally we had the added difficulty of managing self-signed certificates since the client needs to trust the certificate authority that generated the servers SSL certificate. We solved this by adding the CA to the client's trusted CA list through a command line option when starting the client and by asking the user to not tamper with this CLI argument when trying to solve this challenge since adding your own CA here would make man-in-the-middle attacks very trivial.
+The backend is deployed by a bash script that generates a self-signed SSL certificate using openssl for it and starts the backend using \textbf{gunicorn}. This should make it a lot harder to solve the challenge by just sniffing the traffic between client and server using for example Wireshark and extracting the TOTP secret this way. Since the challenge runs locally we had the added difficulty of managing self-signed certificates since the client needs to trust the certificate authority that generated the servers SSL certificate. We solved this by adding the CA to the client's trusted CA list through a command line option when starting the client and by asking the user to not tamper with this CLI argument when trying to solve this challenge since adding your own CA here would make man-in-the-middle attacks very trivial.
 
 
 \subsection{Client Application}
-The client application is built using a few key libraries:
-\begin{itemize}
-    \item \texttt{Qt5 Widgets}: Used for the graphical user interface, including rendering images and managing user interactions.
-    \item \texttt{qrencode}: Used for encoding ticket data into QR codes for easy display and scanning.
-    \item \texttt{httplib}: A lightweight HTTP library that handles communication with the server, including sending and receiving requests securely.
-    \item \texttt{nlohmann/json}: Used for parsing and handling JSON data, which is the format for the data exchanged with the server.
-\end{itemize}
-
-\subsubsection{QR Code Generation and Display}
-The client generates a QR code for each ticket, which encodes the ticket data (including one-time password) into a visual QR code. This QR code is displayed in the user interface using the \texttt{Qt5 Widgets}.
-The QR code is being updated every 15 seconds to ensure that the one-time password (TOTP) stays valid.
-
-\subsubsection{Ticket Validation}
-To validate a ticket, the client communicates with the server to check if the ticket is valid. The ticket data is securely transmitted and the server response is parsed. If the ticket is valid, the client displays a success message; otherwise, an error message is shown on the UI.
-
-\subsubsection{Server Communication and Initialization}
-The client establishes a secure connection to the server using the \texttt{httplib::SSLClient}. The client retrieves user-specific data, such as tickets, from the server and processes the information in \texttt{json} format. Upon receiving the data, the client updates the interface by displaying the first ticket’s QR code.
-
-\subsubsection{Client-Side Communication Process}
-The client-side code interacts with the server through multiple steps, including logging in, obtaining tickets, and validating ticket status. Upon successful login, the server's response is parsed to extract the authentication token. This token is then used in subsequent requests to retrieve ticket information. Each ticket contains a one-time password (TOTP), which is dynamically generated and encoded using Base32. The resulting Base32-encoded string is displayed as a QR code for the user to scan.
+The client application queries the ticket token and TOTP secret from the server and uses it to generate the ticket token string that is then rendered in form of a QR-Code on the GUI. The GUI also has a 'Verify ticket' button which makes the client send the QR-code string to the server and display the server response in the UI.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.3\textwidth]{../figures/QR_Window.png}
+    \includegraphics[width=0.85\linewidth]{../figures/QR_Window.png}
     \caption{Client window displaying the current ticket as a QR-code}
-    \label{fig:WorkFlow1}
+    \label{fig:QR_Window}
 \end{figure}
 
-\subsection{The Vulnerability}
-What the problem with the application is.
+We use the Widgets feature of the \textbf{Qt5} toolkit for the UI and the \textbf{qrencode} library to render the QR-Code (see Fig. \ref{fig:QR_Window}). For the communication with the server we use the \textbf{httplib} and \textbf{nlohmann's json} library that we put into our own wrapper classes that provide some abstractions over httplib's post and get methods that include error handling code and also include and store the JWT token from the login flow for future requests. We use the \textbf{libcotp} library to generate one-time-passwords out of the TOTP secret provided by the server.
 
+The QR-code is a base32 encoded string of the binary representation of an json object which has two keys: 'token' and 'one\_time\_password' which contain the static ticket token and the dynamic TOTP password respectively. This QR-code is kept up-to-date by the client application by generating a new one time password every 15 seconds (in contrary to the most commonly used 30 seconds for TOTP), encoding it into a new encoded string and re-rendering the QR-code.
+
+For simplicity the username and password of our user are hard-coded into the client. By doing this we were able to avoid to implement a login screen into the UI. It also hides the login flow between the client and server from the user to avoid them getting distracted by it since it is not really that important for the challenge.
+
+The same bash script that generates the SSL certificates for the server and starts it up also prepares and compiles the client. For this we make sure that the user has the required dependencies available by either using nix-shell to get them into the current environment or by installing them with the apt package manager. We assume that the user is on a Linux system and has either nix or apt on their system.
+
+We managed to keep the list of dependencies quite low by pulling in most libraries (json, httplib, qrencode and libcotp) as git submodules and statically compiling them into the client. By doing this we only require some build tools as well as qt5 and openssl for the client. The bash script also takes care of recursively pulling in all needed git submodules.

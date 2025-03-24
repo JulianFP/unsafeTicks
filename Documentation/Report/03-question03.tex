@@ -1,53 +1,71 @@
-\section{How to reverse engineer it}
-The Hackflow is shown in Figure \ref{fig:HackingFlow}. While there may be multiple methods of reverse engineering the application, our approach focuses on extracting the TOTP secret.
-
+\section{How to crack it}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.3\textwidth]{../figures/HackingFlow.png}
+    \includegraphics[width=0.6\linewidth]{../figures/HackingFlow.png}
     \caption{An example of how the ticket could be extracted from the program}
     \label{fig:HackingFlow}
 \end{figure}
-\subsection{First steps}
+
+The step-by-step instructions for one possible solution of the hacking challenge is shown in Figure \ref{fig:HackingFlow}. While there probably are many methods of reverse engineering the application and solving the challenge, our approach focuses on extracting the TOTP secret using a debugger and reading it from memory.
+
+\subsection{Search for encoding/decoding functions}
+The binary is compiled using CMake using the Release preset without any further modifications or settings applied. While CMake does strip out most debug symbols it seems to leave function names in the binary. This means that using radare2's 'afl' command we can find the names of all functions and methods as they appear in the original source code.
+
+Most people would probably first look at the QR-code and find out that it contains some kind of encoded string. A good educated guess would be that the encoding is either base32 or base64, and a quick search through the function names would reveal that the client does indeed contain functions to encode and decode base32, but none for base64 (see Fig. \ref{fig:HackingStep1}).
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.3\textwidth]{../figures/Hacking_step_1.png}
-    \caption{Step 1: Find base32 functions}
+    \includegraphics[width=0.95\linewidth]{../figures/Hacking_step_1.png}
+    \caption{Step 1: Find functions for encoding/decoding the QR-code string}
     \label{fig:HackingStep1}
 \end{figure}
+
+\subsection{Decoding the QR-code string}
+
+With this knowledge one could now decode the QR-code string (for example in Python as shown here) which reveals that a ticket contains a token and a one time password (see Fig. \ref{fig:HackingStep2}) . Decoding multiple subsequent QR-codes in this manner would reveal that while the token is static the one time password changes every 15 seconds.
+
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.4\textwidth]{../figures/Hacking_step_2.png}
+    \includegraphics[width=0.95\linewidth]{../figures/Hacking_step_2.png}
     \caption{Step 2: Decode ticket string from QR-Code}
     \label{fig:HackingStep2}
 \end{figure}
-\subsection{Second steps}
+
+\subsection{Searching for interesting functions}
+
+We now assume that our hacker has guessed that the one time passwords are TOTP (or TOTP-like) passwords generated from a secret that needs to be extracted from the client. They might have learned this by again looking through function names or using radare2's awesome Visual Graphs feature which allows one to see which methods are being called from where. This allows a hacker with some patience to relatively easily reverse engineer the client. For example starting from the main function our hacker might find the 'get\_totp\_secret' method, or any other of the functions shown in Fig. \ref{fig:HackingStep3} (all functions in the client containing the word 'ticket').
+
+One of the more interesting functions is 'get\_ticket\_string' since as the name suggests it encodes the string that is rendered as a QR-code. For this it presumably requires all ingredients of the ticket, namely both the token and the totp secret, as a function argument. 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.4\textwidth]{../figures/Hacking_step_3.png}
+    \includegraphics[width=0.95\linewidth]{../figures/Hacking_step_3.png}
     \caption{Step 3: Find the function that needs both the ticket token and the TOTP secret as an argument}
     \label{fig:HackingStep3}
 \end{figure}
+
+\subsection{Finding the point where our interesting function is being called}
+radare2 can also tell our hacker from where this function is being called. This is the vulnerable point where we can set a breakpoint in our debugger (see Fig. \ref{fig:HackingStep4}). The reason for this is that in x86 arguments are passed to a function by writing them (or pointers to them) onto the stack and only then performing the jump to the functions code. The function can then read the arguments from the stack. This makes it relatively easy for a hacker to intercept this data here since in this point in time they will know exactly where to look for it (in the stack).
+
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.4\textwidth]{../figures/Hacking_step_4.png}
+    \includegraphics[width=0.95\linewidth]{../figures/Hacking_step_4.png}
     \caption{Step 4: Startup debugger and set breakpoint}
     \label{fig:HackingStep4}
 \end{figure}
 
-
-\subsection{Third Steps}
+\subsection{Dumping the ticket token and secret}
+After running the client with the debugger up to the breakpoint and dumping the stack we can see that both the ticket token and secret are too complex to fit directly on the stack, however the stack seems to contain pointers to the data (see Fig. \ref{fig:HackingStep5}). When printing the memory at these addresses and decoding the binary in ASCII (what radare2 does in it's visual mode by default in the third column) the hacker would find two strings. One that matches the token from the json object they decoded earlier and another new one (shown in Fig. \ref{fig:HackingStep6}). This is the TOTP secret, and the hacker would be able to verify that with just one line of Python code by generating a one time password with it and comparing it to the one in the QR-code.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.4\textwidth]{../figures/Hacking_step_5.png}
+    \includegraphics[width=0.95\linewidth]{../figures/Hacking_step_5.png}
     \caption{Step 5: Stack dump}
     \label{fig:HackingStep5}
 \end{figure}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.4\textwidth]{../figures/Hacking_step_6.png}
+    \includegraphics[width=0.95\linewidth]{../figures/Hacking_step_6.png}
     \caption{Step 6: Memory dump containing TOTP secret}
     \label{fig:HackingStep6}
 \end{figure}

@@ -4,44 +4,52 @@ including concerts, sports events, theater performances, and more. Their list of
 the NFL, NHL, NBA, WWE, AEW, and popular theater productions like \textit{Harry Potter and the Cursed Child} \cite{ticketmaster_wikipedia}. 
 
 \subsection{The SafeTix ticketing system}
-SafeTix is a rotating ticketing system by Ticketmaster initially introduced in 2019. It's goal is allegedly to keep tickets safe from theft and to undermine scalping of tickets by rotating the ticket barcode every 15 seconds. This makes screenshots, photos or printouts worthless rendering it impossible to steal tickets, but also to resell them \cite{introducing_safetix} \cite{ticketmaster_safetix_faq} \cite{nba_safetix_faq}. 
-
 \begin{figure}[H]
     \begin{center}        
-    \includegraphics[scale = 0.3]{../figures/SafeTix_App_Barcode.png}
+    \includegraphics[width=0.5\linewidth]{../figures/SafeTix_App_Barcode.png}
     \caption{A screenshot from Ticketmaster's app showing SafeTix in action \cite{ticketmaster_mobile_ticketing}}
     \label{fig:app_barcode}
     \end{center}
 \end{figure}
 
-Ticketmaster made some dubious marketing claims about it's ticketing system, for example claiming that SafeTix also reduces the risk of illegal counterfeit tickets (\ref{fig:safetix_quotes}) (a static ticket that is cryptographically sound shouldn't be any more easier to fake?) or claiming that the gliding movement over the barcode (see screenshot in \ref{fig:app_barcode}) makes the ticket somehow 'alive' \cite{nba_safetix_faq} \cite{ticketmaster_safetix_faq}.
+SafeTix is a rotating ticketing system by Ticketmaster initially introduced in 2019. It's goal is to keep tickets safe from theft and to undermine scalping of tickets by rotating the ticket barcode every 15 seconds. This makes screenshots, photos or printouts worthless rendering it impossible to steal tickets, but also to resell them \cite{introducing_safetix} \cite{ticketmaster_safetix_faq} \cite{nba_safetix_faq}. 
+
+Ticketmaster made some dubious marketing claims about it's ticketing system, for example claiming that SafeTix also reduces the risk of illegal counterfeit tickets (Fig. \ref{fig:safetix_quotes}) (a static ticket that is cryptographically sound shouldn't be any more easier to fake?) or claiming that the gliding movement over the barcode (shown in Fig. \ref{fig:app_barcode}) makes the ticket somehow 'alive' \cite{nba_safetix_faq} \cite{ticketmaster_safetix_faq}.
 
 \begin{figure}[H]
     \begin{center}
-        \includegraphics[width=0.5\textwidth]{../figures/SafeTix_Quote_1.png}
+        \includegraphics[width=0.95\linewidth]{../figures/SafeTix_Quote_1.png}
     \end{center}
     \begin{center}
-        \includegraphics[width=0.5\textwidth]{../figures/SafeTix_Quote_2.png}
+        \includegraphics[width=0.95\linewidth]{../figures/SafeTix_Quote_2.png}
     \end{center}
     \caption{Two quotes from Ticketmaster's and the NBA's FAQ pages about SafeTix \cite{ticketmaster_safetix_faq} \cite{nba_safetix_faq}}
     \label{fig:safetix_quotes}
 \end{figure}
 
 \subsection{SafeTix still works offline}
-One major issue with rotating tickets like these that other ticketing systems faced in the past is the always-online requirement of these tickets. This is a problem because attendees often face connectivity issues at crowded venues, where network overload or poor reception can make it difficult to access online tickets. Ticketmaster addressed this by making SafeTix work entirely offline after the initial download of the ticket which can be done ahead of time with a stable internet connection at home. This is explained in their FAQ to ensure the user that they don't have to worry about not being able to access their ticket on the venue (\ref{fig:safetix_quotes}) \cite{ticketmaster_safetix_faq}. 
+One major issue with rotating tickets like these that other ticketing systems faced in the past is the always-online requirement of them. This is a problem because attendees often face connectivity issues at crowded venues, where network overload or poor reception can make it difficult to access online tickets. Ticketmaster addressed this by making SafeTix work entirely offline after the initial download of the ticket which can be done ahead of time with a stable internet connection at home. This is explained in their FAQ to ensure the user that they don't have to worry about not being able to access their ticket at the venue (Fig. \ref{fig:safetix_quotes}) \cite{ticketmaster_safetix_faq}. 
 
 \subsection{How it got reverse-engineered}
-The problem with SafeTix is, that it not only limits fraud and theft, but also severely limits the users options. Reselling or gifting already bought tickets outside of Ticketmaster's own ticket-resale marketplace after for example getting sick and not being able to attend to that event is not possible anymore. Ticketmaster's marketplace highly restricts selling prices and Ticketmaster themselves take a cut of every transaction (essentially profiting twice for the same ticket). SafeTix also introduces a lock-in into Ticketmaster's mobile application which requires an account to be used and, according to Exodus, contains 8 data trackers and requires 25 different permissions (on version 260.0 of the Android app) \cite{exodus}. Apart from these third-parties Ticketmaster themselves also learns a lot of data about the user, for example their contact information which could be used to build social graphs \cite{reverse_engineering_ticketmaster}.
+The problem with SafeTix is that it not only limits fraud and theft, but also severely limits the users options. Reselling or gifting already bought tickets outside of Ticketmaster's own ticket-resale marketplace after for example getting sick and not being able to attend an event is not possible anymore. Ticketmaster's marketplace highly restricts selling prices and Ticketmaster themselves take a cut of every transaction (essentially profiting twice on the same ticket). SafeTix also introduces a lock-in into Ticketmaster's mobile application which requires an account to be used and, according to Exodus, contains 8 data trackers and requires 25 different permissions (on version 260.0 of the Android app) \cite{exodus}. Apart from these third-parties Ticketmaster themselves also learns a lot of data about the user, for example their contact information which could be used to build social graphs \cite{reverse_engineering_ticketmaster}.
 
-The Rust- and Crypto-developer Conduition was not happy with this and decided to reverse engineer SafeTix \cite{conduition}. He was motivated by the fact that SafeTix works offline which suggests that the seed information from which the rotating tickets are generated must be stored client-side and 'just' needs to be extracted \cite{reverse_engineering_ticketmaster}.
+The Rust- and Crypto-developer Conduition was not happy with this and decided to reverse engineer SafeTix \cite{conduition}. They were motivated by the fact that SafeTix works offline which suggests that the seed information from which the rotating tickets are generated must be stored client-side and 'just' needs to be extracted \cite{reverse_engineering_ticketmaster}.
 
 After inspecting the barcodes, Conduition found that the format was simple PDF417 barcodes that encode UTF-8 text. 
 The blue bar sweeping across the barcode was just a CSS animation, not actually preventing screenshots, because PDF417 has error correction built in.
 
-He noticed that the barcodes generated by the Ticketmaster web app contained four distinct pieces of data, 
+They noticed that the barcodes generated by the Ticketmaster web app contained four distinct pieces of data, 
 delimited by colons: Base64-encoded data, followed by two six-digit numbers and a Unix timestamp. 
 The first two six-digit numbers appeared similar to Time-based One-Time Passwords (TOTPs), 
 likely generated from different secrets using the timestamp.
+
+\begin{figure}[H]
+    \begin{center}
+    \includegraphics[width=0.5\linewidth]{../figures/Conduition_custom_ticket_app.png}
+    \caption{The Expo app TicketGimp Conduition wrote to store and render the extracted tickets \cite{reverse_engineering_ticketmaster}}
+    \label{fig:conduition_custom_app}
+    \end{center}
+\end{figure}
 
 The static Base64 data looked like a random bearer token identifying the ticket holder and the ticket. 
 When the barcode rotates every 15 seconds, only the two six-digit numbers and the timestamp change, but the Base64 data remains static. 
@@ -51,12 +59,5 @@ After decoding the token, Conduition identified the properties, including the be
 The two TOTPs were constructed from an eventKey and customerKey, and the timestamp was used to verify the barcodes. 
 He validated this by generating TOTPs using the identified secrets, matching the TOTPs in the barcode, 
 and concluding that with the bearer token and the TOTP secrets, valid barcodes could be generated.
-For the sake of not using Ticketsmasters App, he even made his own App that can store his ticket instead of Ticketmaster's app and shows his current Barcode as can be seen in Figure \ref{fig:conduition_custom_app} \cite{reverse_engineering_ticketmaster}.
-
-\begin{figure}[H]
-    \begin{center}
-    \includegraphics[width=0.2\textwidth]{../figures/Conduition_custom_ticket_app.png}
-    \caption{The Expo app TicketGimp Conduition wrote to store and render the extracted tickets \cite{reverse_engineering_ticketmaster}}
-    \label{fig:conduition_custom_app}
-    \end{center}
-\end{figure}
+Conduition also noted that the Ticketmaster even prints the token in the web console, making token extraction especially easy.
+For the sake of not using Ticketsmasters App, they even made his own App that can store his ticket instead of Ticketmaster's app and shows his current Barcode as can be seen in Figure \ref{fig:conduition_custom_app} \cite{reverse_engineering_ticketmaster}.
